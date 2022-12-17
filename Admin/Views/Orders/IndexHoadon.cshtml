@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Admin.Models.Order>
+
+@{
+    ViewData["Title"] = "IndexHoadon";
+}
+
+<h1>Order</h1>
+<table id="example" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Voucher)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateAt)
+                </td>
+                <td>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Voucher.VoucherCode)
+                </td>
+                <td>
+
+
+
+                    | <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

@@ -1,0 +1,374 @@
+﻿@model IEnumerable<Shop.Models.Product>
+
+
+@{
+    ViewData["Title"] = "Index";
+}
+<main>
+    <!-- breadcrumb area start -->
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb-wrap">
+                        <nav aria-label="breadcrumb">
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"><i class="fa fa-home"></i></a></li>
+                                <li class="breadcrumb-item active" aria-current="page">shop</li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- breadcrumb area end -->
+    <!-- page main wrapper start -->
+    <div class="shop-main-wrapper section-padding">
+        @{
+            IEnumerable<Brand> Brand = ViewData["ProductBrand"] as IEnumerable<Brand>;
+            IEnumerable<Color> Color = ViewData["ProductColor"] as IEnumerable<Color>;
+            IEnumerable<Shop.Models.Type> Type = ViewData["ProductType"] as IEnumerable<Shop.Models.Type>;
+            IEnumerable<Size> Size = ViewData["ProductSize"] as IEnumerable<Size>;
+        }
+        <div class="container">
+            <div class="row">
+                <!-- sidebar area start -->
+                <div class="col-lg-3 order-2 order-lg-1">
+                    <aside class="sidebar-wrapper">
+                        <!-- single sidebar start -->
+                        <div class="sidebar-single">
+                            <h4 class="sidebar-title">categories</h4>
+                            <div class="sidebar-body">
+                                <ul class="shop-categories">
+                                    @foreach (Shop.Models.Type type in Type)
+                                    {
+                                        <li><a href="/Search/SearchByName/@type.Id type">@type.Tilte</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- single sidebar end -->
+                        <!-- single sidebar start -->
+                        <div class="sidebar-single">
+                            <h4 class="sidebar-title">price</h4>
+                            <div class="sidebar-body">
+                                <div class="price-range-wrap">
+                                    @{
+                                        double min = Convert.ToDouble(ViewData["min"]);
+                                        double max = Convert.ToDouble(ViewData["max"]);
+                                    }
+                                    <div class="price-range" data-min="@min" data-max="@max"></div>
+                                    <div class="range-slider">
+                                        <form asp-action="SearchByName" asp-controller="Search" class="d-flex align-items-center justify-content-between">
+                                            <div class="price-input">
+                                                <label for="amount"></label>
+                                                <input name="pricesearch" type="text" id="amount">
+                                            </div>
+                                            <button type="submit" class="filter-btn">filter</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- single sidebar end -->
+                        <!-- single sidebar start -->
+                        <div class="sidebar-single">
+                            <h4 class="sidebar-title">Brand</h4>
+                            <div class="sidebar-body">
+                                <ul class="shop-categories">
+                                    @foreach (Brand brand in Brand)
+                                    {
+                                        <li><a href="/Search/SearchByName/@brand.Id brand">@brand.Tilte</a></li>
+                                    }
+
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- single sidebar end -->
+                        <!-- single sidebar start -->
+                        <div class="sidebar-single">
+                            <h4 class="sidebar-title">color</h4>
+                            <div class="sidebar-body">
+                                <ul class="shop-categories">
+                                    @foreach (Color color in Color)
+                                    {
+                                        <li><a href="/Search/SearchByName/@color.Id color">@color.Title</a></li>
+                                    }
+
+
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- single sidebar end -->
+                        <!-- single sidebar start -->
+                        <div class="sidebar-single">
+                            <h4 class="sidebar-title">State</h4>
+                            <div class="sidebar-body">
+                                <ul class="shop-categories">
+                                    @foreach (Size size in Size)
+                                    {
+                                        <li><a href="/Search/SearchByName/@size.Id size">@size.Title</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- single sidebar end -->
+                        <!-- single sidebar start -->
+                        <!-- single sidebar end -->
+                    </aside>
+                </div>
+                <!-- sidebar area end -->
+                <!-- shop main wrapper start -->
+                <div class="col-lg-9 order-1 order-lg-2">
+                    <div class="shop-product-wrapper">
+                        <!-- shop product top wrap start -->
+                        <div class="shop-top-bar">
+                            <div class="row align-items-center">
+                                <div class="col-lg-7 col-md-6 order-2 order-md-1">
+                                    <div class="top-bar-left">
+                                        <div class="product-view-mode">
+                                            <a class="active" href="#" data-target="grid-view" data-toggle="tooltip" title="Grid View"><i class="fa fa-th"></i></a>
+                                            <a href="#" data-target="list-view" data-toggle="tooltip" title="List View"><i class="fa fa-list"></i></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!-- shop product top wrap start -->
+                        <!-- product item list wrapper start -->
+                        <div class="shop-product-wrap grid-view row mbn-30">
+                            @foreach (var item in Model)
+                            {
+                                <div class="col-md-4 col-sm-6">
+                                    <!-- product grid start -->
+                                    <div class="product-item">
+                                        <figure class="product-thumb">
+                                            <a href="/Products/Details/@item.Id">
+                                                @{
+                                                    string[] arrListStr = item.ProductImage.Split(" ");
+                                                }
+                                                <img class="pri-img" src="https://localhost:44347/images/@arrListStr[0]" alt="product">
+                                                <img class="sec-img" src="https://localhost:44347/images/@arrListStr[1]" alt="product">
+                                            </a>
+                                            <div class="button-group">
+                                                <a asp-controller="AddOrder" asp-action="AddtoWishlist" asp-route-id="@item.Id" data-toggle="tooltip" title="Add to Wishlist"><i class="pe-7s-like"></i></a>
+                                                <a asp-controller="AddOrder" asp-action="AddtoCart" asp-route-id="@item.Id" data-toggle="tooltip" title="Add to Cart"><i class="pe-7s-cart"></i></a>
+                                                <a href="#" data-toggle="modal" data-target="#quick_view_@item.Id"><span data-toggle="tooltip" title="Quick View"><i class="pe-7s-look"></i></span></a>
+                                            </div>
+
+                                        </figure>
+                                        <div class="product-caption text-center">
+                                            <h6 class="product-name">
+                                                <a href="/Products/Details/@item.Id">@item.ProductName</a>
+                                            </h6>
+                                            <div class="price-box">
+                                                <span class="price-regular">$@item.OutPrice</span>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- product grid end -->
+                                    <!-- product list item end -->
+                                    <div class="product-list-item">
+                                        <figure class="product-thumb">
+                                            <a href="/Products/Details/@item.Id">
+
+                                                <img class="pri-img" src="https://localhost:44347/images/@arrListStr[0]" alt="product">
+                                                <img class="sec-img" src="https://localhost:44347/images/@arrListStr[1]" alt="product">
+                                            </a>
+                                        </figure>
+                                        <div class="product-content-list">
+                                            <h5 class="product-name">  <a href="/Products/Details/@item.Id">@item.ProductName</a></h5>
+                                            <div class="price-box">
+                                                <span class="price-regular">$@item.OutPrice</span>
+                                                <span class="price-old"><del>$70.00</del></span>
+                                            </div>
+                                            <p>
+                                                @item.ProductDescription
+                                            </p>
+                                            <div class="button-group">
+                                                <a asp-controller="AddOrder" asp-action="AddtoWishlist" asp-route-id="@item.Id" data-toggle="tooltip" title="Add to Wishlist"><i class="pe-7s-like"></i></a>
+                                                <a asp-controller="AddOrder" asp-action="AddtoCart" asp-route-id="@item.Id" data-toggle="tooltip" title="Add to Cart"><i class="pe-7s-cart"></i></a>
+                                                <a href="#" data-toggle="modal" data-target="#quick_view" data-id="@item.Id"><span data-toggle="tooltip" title="Quick View"><i class="pe-7s-look"></i></span></a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal" id="quick_view_@item.Id">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- product details inner end -->
+                                                <div class="product-details-inner">
+                                                    <div class="row">
+                                                        <div class="col-lg-5">
+                                                            <div class="product-large-slider">
+                                                                @for (int i = 0; i < arrListStr.Length - 1; i++)
+                                                                {
+                                                                    <div class="pro-large-img img-zoom">
+                                                                        <img src="https://localhost:44347/images/@arrListStr[i]" alt="product-details" />
+                                                                    </div>
+                                                                }
+
+
+                                                            </div>
+                                                            <div class="pro-nav slick-row-10 slick-arrow-style">
+                                                                @for (int i = 0; i < arrListStr.Length - 1; i++)
+                                                                {
+                                                                    <div class="pro-nav-thumb">
+                                                                        <img src="https://localhost:44347/images/@arrListStr[i]" alt="product-details" />
+                                                                    </div>
+                                                                }
+
+
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-7">
+                                                            <div class="product-details-des">
+                                                                <h3 class="product-name">@item.ProductName</h3>
+
+                                                                <div class="price-box">
+                                                                    <span class="price-regular">$@item.OutPrice</span>
+                                                                    <span class="price-old"><del>$90.00</del></span>
+                                                                </div>
+                                                                <div class="availability">
+                                                                    <i class="fa fa-check-circle"></i>
+                                                                    @if (item.ProductQuantity > 0)
+                                                                    {
+
+
+                                                                        <span>@item.ProductQuantity in stock</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Sold Out</span>
+                                                                    }
+
+                                                                </div>
+                                                                <p class="pro-desc">
+                                                                    @item.ProductDescription
+                                                                </p>
+                                                                <div class="quantity-cart-box d-flex align-items-center">
+
+                                                                    <div class="action_link">
+                                                                        <a asp-controller="AddOrder" asp-action="AddtoCart" asp-route-id="@item.Id" class="btn btn-cart2">Add to Cart</a>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="useful-links">
+                                                                    <a asp-controller="AddOrder" asp-action="AddtoWishlist" asp-route-id="@item.Id" data-toggle="tooltip" title="Wishlist">
+                                                                        <i class="pe-7s-like"></i>wishlist
+                                                                    </a>
+                                                                </div>
+                                                                <div class="like-icon">
+                                                                    <a class="facebook" href="#"><i class="fa fa-facebook"></i>like</a>
+                                                                    <a class="twitter" href="#"><i class="fa fa-twitter"></i>tweet</a>
+                                                                    <a class="pinterest" href="#"><i class="fa fa-pinterest"></i>save</a>
+                                                                    <a class="google" href="#"><i class="fa fa-google-plus"></i>share</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div> <!-- product details inner end -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="paginatoin-area text-center">
+                            <ul class="pagination-box">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- shop main wrapper end -->
+            </div>
+        </div>
+    </div>
+    <!-- page main wrapper end -->
+</main>
+
+<!-- Scroll to top start -->
+<div class="scroll-top not-visible">
+    <i class="fa fa-angle-up"></i>
+</div>
+
+<div class="offcanvas-minicart-wrapper">
+    <div class="minicart-inner">
+        <div class="offcanvas-overlay"></div>
+        <div class="minicart-inner-content">
+            <div class="minicart-close">
+                <i class="pe-7s-close"></i>
+            </div>
+            <div class="minicart-content-box">
+                <div class="minicart-item-wrapper">
+                    @{
+                        Double totlalprice = 0;
+                        IEnumerable<OrderDetail> orderderail = ViewData["orderdeatail"] as IEnumerable<OrderDetail>;
+                        if (orderderail == null)
+                        {
+                            <li class="minicart-item">
+
+                            </li>
+                        }
+                        else
+                        {
+                            @foreach (OrderDetail ord in orderderail)
+                            {
+                                totlalprice += Convert.ToDouble(ord.Price * ord.Quantity);
+                                <li class="minicart-item">
+                                    <div class="minicart-thumb">
+                                        @{
+                                            string[] arrListStr = ord.Product.ProductImage.Split(' ');
+                                        }
+                                        <a href="product-details.html">
+                                            <img src="https://localhost:44347/images/@arrListStr[0]" alt="product">
+                                        </a>
+                                    </div>
+                                    <div class="minicart-content">
+                                        <h6 class="product-name">
+                                            <a href="/Products/Details/@ord.Product.Id">@ord.Product.ProductName</a>
+                                        </h6>
+                                        <p>
+                                            <span class="cart-quantity">@ord.Quantity<strong>&times;</strong></span>
+                                            <span class="cart-price">$@ord.Price</span>
+                                        </p>
+                                    </div>
+                                    <a href="/AddOrder/Delete/@ord.Id" class="minicart-remove"><i class="pe-7s-close"></i></a>
+                                </li>
+                            }
+                        }
+                    }
+                </div>
+
+                <div class="minicart-pricing-box">
+                    <ul>
+                        <li class="total">
+                            <span>total</span>
+                            <span><strong>$@totlalprice</strong></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="minicart-button">
+                    <a href="/OrderDetails"><i class="fa fa-shopping-cart"></i> View Cart</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- offcanvas mini cart end -->
+<!-- JS
+============================================ -->
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
