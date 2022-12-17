@@ -1,2 +1,1 @@
 # tech-shop
-C# thesis

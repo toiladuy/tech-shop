@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+<main>
+    <!-- breadcrumb area start -->
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb-wrap">
+                        <nav aria-label="breadcrumb">
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"><i class="fa fa-home"></i></a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Login</li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="login-register-wrapper section-padding">
+        <div class="container">
+            <div class="member-area-from-wrap">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="login-reg-form-wrap">
+                            <h4>Sign In</h4>
+                            <form class="user" asp-action="LoginAdmin"
+                                  asp-controller="Login" method="post">
+                                <div class="single-input-item">
+                                    <input name="Email" type="email" placeholder="Email or Username" required />
+                                </div>
+                                <div class="single-input-item">
+                                    <input name="Pass" type="password" placeholder="Enter your Password" required />
+                                </div>
+                                <div class="single-input-item">
+                                    <div class="login-reg-form-meta d-flex align-items-center justify-content-between">
+                                        <div class="remember-meta">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="rememberMe">
+                                                <label class="custom-control-label" for="rememberMe">Remember Me</label>
+                                            </div>
+                                        </div>
+                                        <a href="/Users/IndexForgotPassWord" class="forget-pwd">Forget Password?</a>
+                                    </div>
+                                </div>
+                                <div class="single-input-item">
+                                    <button type="submit" name="login" value="Login" class="btn btn-sqr">Login</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<div class="scroll-top not-visible">
+    <i class="fa fa-angle-up"></i>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
