@@ -67,7 +67,7 @@
                                             @{
                                                 var pricetotla = item.Quantity * item.Price;
                                             }
-                                            <td class="pro-subtotal"><span>@pricetotla</span></td>
+                                            <td class="pro-subtotal"><span>@pricetotla?.ToString("#,##0.#")</span></td>
                                             <td class="pro-remove"><a data-toggle="modal" data-target="#logoutModal"><i class="fa fa-trash-o"></i></a></td>
                                         </tr>
                                         <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -130,13 +130,13 @@
                                         }
                                     }
                                 }
-                                <h6>Cart Totals : @total</h6>
+                                <h6>Cart Totals : @total.ToString("#,##0.#")</h6>
                                 <div class="table-responsive">
                                     <table class="table">
                                         <tr>
                                             @{ var subtotal = total * sale / 100; }
                                             <td>Sub Total</td>
-                                            <td>$@subtotal</td>
+                                            <td>$@subtotal.ToString("#,##0.#")</td>
                                         </tr>
                                         <tr>
                                             <td>Voucher Code</td>
@@ -147,7 +147,7 @@
                                             @{
                                                 double finaltotal = total - subtotal;
                                             }
-                                        <td class="total-amount">$@finaltotal.ToString("0.##")</td>
+                                            <td class="total-amount">$@finaltotal.ToString("#,##0.#")</td>
                                         </tr>
                                     </table>
                                 </div>

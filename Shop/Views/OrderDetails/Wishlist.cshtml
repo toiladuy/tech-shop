@@ -47,7 +47,7 @@
                                     <tr>
                                         <td class="pro-thumbnail"><a href="#"><img class="img-fluid" src="https://localhost:44347/images/@arrListStr[0]" alt="Product" /></a></td>
                                         <td class="pro-title"><a href="#">@item.Product.ProductName</a></td>
-                                        <td class="pro-price"><span>$@item.Price</span></td>
+                                            <td class="pro-price"><span>$@item.Price?.ToString("#,##0.#")</span></td>
                                         @if (item.Product.ProductQuantity > 0)
                                         {
 

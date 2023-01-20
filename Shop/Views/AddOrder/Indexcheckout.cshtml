@@ -107,7 +107,7 @@
                                                     <td>
                                                         <a href="product-details.html">@productname<strong> × @ord.Quantity</strong></a>
                                                     </td>
-                                                    <td>$@ord.Price* @ord.Quantity</td>
+                                                    <td>$@ord.Price?.ToString("#,##0.#") * @ord.Quantity</td>
                                                 </tr>
 
                                             }
@@ -144,19 +144,19 @@
                                             <tr>
 
                                                 <td>Voucher code</td>
-                                                <td><strong>$@vouchercode</strong></td>
+                                                <td><strong>@vouchercode</strong></td>
                                             </tr>
                                             <tr>
                                                 @{ var subtotal = total * sale / 100; }
                                                 <td>Sub Total</td>
-                                                <td><strong>$@subtotal</strong></td>
+                                                <td><strong>$@subtotal.ToString("#,##0.#")</strong></td>
                                             </tr>
                                             <tr>
                                                 @{
                                                     double finaltotal = total - subtotal;
                                                 }
                                                 <td>Total Amount</td>
-                                                <td><strong>$@total_temp.ToString("0.##")</strong></td>
+                                                <td><strong>$@total_temp.ToString("#,##0.#")</strong></td>
                                             </tr>
                                         </tfoot>
                                     </table>

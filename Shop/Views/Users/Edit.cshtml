@@ -93,7 +93,7 @@
                                                             {
                                                             <tr>
                                                                 <td>@order.OrderId</td>
-                                                                <td>@order.TotalPrice.ToString("0.##")</td>
+                                                                    <td>@order.TotalPrice.ToString("#,##0.#")</td>
                                                                 <td>@order.CreateAt</td>
                                                                 <td>
                                                                     @switch (order.Status)

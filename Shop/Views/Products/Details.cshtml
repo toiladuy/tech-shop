@@ -42,7 +42,7 @@
                                         @for (int i = 0; i < arrListStr.Length; i++)
                                         {
                                             <div class="pro-large-img img-zoom">
-                                                <img src="https://localhost:44347/images/@arrListStr[i]" alt="product-details" />
+                                                <img src="/assets/img/product/@arrListStr[i]" alt="product-details" />
                                             </div>
                                         }
                                     </div>
@@ -50,7 +50,7 @@
                                         @for (int i = 0; i < arrListStr.Length - 1; i++)
                                         {
                                             <div class="pro-nav-thumb">
-                                                <img src="https://localhost:44347/images/@arrListStr[i]" alt="product-details" />
+                                                <img src="/assets/img/product/@arrListStr[i]" alt="product-details" />
                                             </div>
                                         }
                                     </div>
@@ -60,7 +60,7 @@
                                         <h3 class="product-name">@Model.ProductName</h3>
 
                                         <div class="price-box">
-                                            <span class="price-regular">$@Model.OutPrice</span>
+                                        <span class="price-regular">$@Model.OutPrice.ToString("#,##0.00")</span>
                                         </div>
                                         <div class="availability">
                                             <i class="fa fa-check-circle"></i>
@@ -167,30 +167,30 @@
                             <div class="col-lg-5">
                                 <div class="product-large-slider">
                                     <div class="pro-large-img img-zoom">
-                                        <img src="https://localhost:44347/images/product-details-img1.jpg" alt="product-details" />
+                                        <img src="/assets/img/product/product-details-img1.jpg" alt="product-details" />
                                     </div>
                                     <div class="pro-large-img img-zoom">
-                                        <img src="https://localhost:44347/images/product-details-img2.jpg" alt="product-details" />
+                                        <img src="/assets/img/product/product-details-img2.jpg" alt="product-details" />
                                     </div>
                                     <div class="pro-large-img img-zoom">
-                                        <img src="https://localhost:44347/images/product-details-img3.jpg" alt="product-details" />
+                                        <img src="/assets/img/product/product-details-img3.jpg" alt="product-details" />
                                     </div>
                                     <div class="pro-large-img img-zoom">
-                                        <img src="https://localhost:44347/images/product-details-img4.jpg" alt="product-details" />
+                                        <img src="/assets/img/product/product-details-img4.jpg" alt="product-details" />
                                     </div>
                                 </div>
                                 <div class="pro-nav slick-row-10 slick-arrow-style">
                                     <div class="pro-nav-thumb">
-                                        <img src="https://localhost:44347/images/product-details-img1.jpg" alt="product-details" />
+                                        <img src="/assets/img/product/product-details-img1.jpg" alt="product-details" />
                                     </div>
                                     <div class="pro-nav-thumb">
-                                        <img src="https://localhost:44347/images/product-details-img2.jpg" alt="product-details" />
+                                        <img src="/assets/img/product/product-details-img2.jpg" alt="product-details" />
                                     </div>
                                     <div class="pro-nav-thumb">
-                                        <img src="https://localhost:44347/images/product-details-img3.jpg" alt="product-details" />
+                                        <img src="/assets/img/product/product-details-img3.jpg" alt="product-details" />
                                     </div>
                                     <div class="pro-nav-thumb">
-                                        <img src="https://localhost:44347/images/product-details-img4.jpg" alt="product-details" />
+                                        <img src="/assets/img/product/product-details-img4.jpg" alt="product-details" />
                                     </div>
                                 </div>
                             </div>
@@ -281,7 +281,7 @@
                                                 string[] arrListStr1 = ord.Product.ProductImage.Split(' ');
                                             }
                                             <a href="product-details.html">
-                                                <img src="https://localhost:44347/images/@arrListStr1[0]" alt="product">
+                                                <img src="/assets/img/product/@arrListStr1[0]" alt="product">
                                             </a>
                                         </div>
                                         <div class="minicart-content">
