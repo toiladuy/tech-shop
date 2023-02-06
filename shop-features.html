@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Markmap</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+#mindmap {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.14.3/dist/style.css">
+</head>
+<body>
+<svg id="mindmap"></svg>
+<script src="https://cdn.jsdelivr.net/npm/d3@6.7.0"></script><script src="https://cdn.jsdelivr.net/npm/markmap-view@0.14.3"></script><script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.14.3/dist/index.umd.min.js"></script><script>(r => {
+                setTimeout(r);
+              })(() => {
+  const {
+    markmap,
+    mm
+  } = window;
+  const toolbar = new markmap.Toolbar();
+  toolbar.attach(mm);
+  const el = toolbar.render();
+  el.setAttribute('style', 'position:absolute;bottom:20px;right:20px');
+  document.body.append(el);
+})</script><script>((getMarkmap, getOptions, root, jsonOptions) => {
+        const markmap = getMarkmap();
+        window.mm = markmap.Markmap.create('svg#mindmap', (getOptions || markmap.deriveOptions)(jsonOptions), root);
+      })(() => window.markmap,null,{"type":"heading","depth":0,"payload":{"lines":[0,1]},"content":"Chức năng","children":[{"type":"heading","depth":1,"payload":{"lines":[2,3]},"content":"Main (Trang sản phẩm cho người dùng)","children":[{"type":"heading","depth":2,"payload":{"lines":[4,5]},"content":"Register (Đăng ký tài khoản mới)","children":[{"type":"list_item","depth":3,"payload":{"lines":[6,7]},"content":"Đăng ký tài khoản mới"}]},{"type":"heading","depth":2,"payload":{"lines":[8,9]},"content":"Forget password (Quên mật khẩu)","children":[{"type":"list_item","depth":3,"payload":{"lines":[10,11]},"content":"Tạo mật khẩu ngẫu nhiên mới"},{"type":"list_item","depth":3,"payload":{"lines":[11,12]},"content":"Gửi email với mật khẩu mới này"}]},{"type":"heading","depth":2,"payload":{"lines":[13,14]},"content":"Login (Đăng nhập)","children":[{"type":"list_item","depth":3,"payload":{"lines":[15,16]},"content":"Đăng nhập bằng email và mật khẩu"}]},{"type":"heading","depth":2,"payload":{"lines":[17,18]},"content":"Home (Trang chủ)","children":[{"type":"list_item","depth":3,"payload":{"lines":[19,20]},"content":"Chạy chương trình khuyến mãi"},{"type":"list_item","depth":3,"payload":{"lines":[20,21]},"content":"Giới thiệu sản phẩm HOT"}]},{"type":"heading","depth":2,"payload":{"lines":[22,23]},"content":"Shop (Danh sách sản phẩm)","children":[{"type":"heading","depth":3,"payload":{"lines":[24,25]},"content":"Hiển thị danh sách sản phẩm"},{"type":"heading","depth":3,"payload":{"lines":[26,27]},"content":"Bộ lọc sản phẩm (theo loại sản phẩm, giá, thương hiệu, ...)"},{"type":"heading","depth":3,"payload":{"lines":[28,29]},"content":"Xem chi tiết sản phẩm"},{"type":"heading","depth":3,"payload":{"lines":[30,31]},"content":"Xem nhanh sản phẩm"},{"type":"heading","depth":3,"payload":{"lines":[32,33]},"content":"Thêm sản phẩm vào danh sách yêu thích"},{"type":"heading","depth":3,"payload":{"lines":[34,35]},"content":"Thêm sản phẩm vào giỏ hàng"}]},{"type":"heading","depth":2,"payload":{"lines":[36,37]},"content":"Cart &amp; Checkout (Giỏ hàng &amp; Thanh toán)","children":[{"type":"list_item","depth":3,"payload":{"lines":[38,39]},"content":"Sử dụng mã giảm giá"},{"type":"list_item","depth":3,"payload":{"lines":[39,40]},"content":"Thay đổi số lượng sản phẩm trong giỏ hàng"},{"type":"list_item","depth":3,"payload":{"lines":[40,41]},"content":"Thanh toán đơn hàng","children":[{"type":"list_item","depth":4,"payload":{"lines":[41,42]},"content":"Đặt đơn hàng COD"},{"type":"list_item","depth":4,"payload":{"lines":[42,43]},"content":"Thanh toán bằng Momo"}]}]},{"type":"heading","depth":2,"payload":{"lines":[44,45]},"content":"Wishlist (Danh sách sản phẩm yêu thích)","children":[{"type":"list_item","depth":3,"payload":{"lines":[46,47]},"content":"Có thể thêm sản phẩm vào giỏ hàng từ đây"},{"type":"list_item","depth":3,"payload":{"lines":[47,48]},"content":"Xóa sản phẩm khỏi wishlist"}]},{"type":"heading","depth":2,"payload":{"lines":[49,50]},"content":"My Account (Thông tin người dùng)","children":[{"type":"list_item","depth":3,"payload":{"lines":[51,52]},"content":"Xem danh sách đơn hàng","children":[{"type":"list_item","depth":4,"payload":{"lines":[52,53]},"content":"Tình trạng đơn hàng"},{"type":"list_item","depth":4,"payload":{"lines":[53,54]},"content":"Xem sản phẩm trong đơn hàng"}]},{"type":"list_item","depth":3,"payload":{"lines":[54,55]},"content":"Xem thông tin chi tiết tài khoản"},{"type":"list_item","depth":3,"payload":{"lines":[55,56]},"content":"Đổi mật khẩu"},{"type":"list_item","depth":3,"payload":{"lines":[56,57]},"content":"Logout (Đăng xuất)"}]}]},{"type":"heading","depth":1,"payload":{"lines":[58,59]},"content":"Admin (Trang quản lý)","children":[{"type":"heading","depth":2,"payload":{"lines":[60,61]},"content":"Quản lý sản phẩm","children":[{"type":"list_item","depth":3,"payload":{"lines":[62,63]},"content":"Quản lý danh sách sản phẩm (Thêm/Xóa/Sửa thông tin)"},{"type":"list_item","depth":3,"payload":{"lines":[63,64]},"content":"Quản lý loại sản phẩm"},{"type":"list_item","depth":3,"payload":{"lines":[64,65]},"content":"Quản lý thương hiệu"},{"type":"list_item","depth":3,"payload":{"lines":[65,66]},"content":"Quản lý voucher (mã giảm giá)"},{"type":"list_item","depth":3,"payload":{"lines":[66,67]},"content":"Quản lý màu sắc"}]},{"type":"heading","depth":2,"payload":{"lines":[68,69]},"content":"Quản lý đơn hàng","children":[{"type":"list_item","depth":3,"payload":{"lines":[70,71]},"content":"Danh sách đơn hàng","children":[{"type":"list_item","depth":4,"payload":{"lines":[71,72]},"content":"Xem danh sách sản phẩm trong đơn hàng"},{"type":"list_item","depth":4,"payload":{"lines":[72,73]},"content":"Cập nhật trạng thái giao hàng"},{"type":"list_item","depth":4,"payload":{"lines":[73,74]},"content":"Hủy đơn hàng"}]},{"type":"list_item","depth":3,"payload":{"lines":[74,75]},"content":"Danh sách hóa đơn","children":[{"type":"list_item","depth":4,"payload":{"lines":[75,76]},"content":"Sau khi đơn hàng giao hoàn tất sẽ được chuyển thành hóa đơn"},{"type":"list_item","depth":4,"payload":{"lines":[76,77]},"content":"Có thể hủy hóa đơn"}]}]}]}]},{"maxWidth":300})</script>
+</body>
+</html>
