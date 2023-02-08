@@ -3,11 +3,8 @@ using AdminWeb.Command;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AdminWeb.Controllers
 {
@@ -31,11 +28,11 @@ namespace AdminWeb.Controllers
             String email = HttpContext.Request.Form["Email"];
             String Pass = HttpContext.Request.Form["pass"];
             String btnLogin = HttpContext.Request.Form["login"];
-            if(btnLogin != null)
+            if (btnLogin != null)
             {
                 var dataFashionContext = _context.Users.Include(u => u.Role);
-                var data = dataFashionContext.Where(s => s.Email.Equals(email) && s.Password.Equals(Pass) && s.Status == 1 ).ToList();
-                if(data.Count > 0)
+                var data = dataFashionContext.Where(s => s.Email.Equals(email) && s.Password.Equals(Pass) && s.Status == 1).ToList();
+                if (data.Count > 0 && data.Any(u => u.RoleId.Equals("Admin", StringComparison.OrdinalIgnoreCase)))
                 {
                     HttpContext.Session.SetString("user", data.FirstOrDefault().Id.ToString());
                     HttpContext.Session.SetString("role", data.FirstOrDefault().RoleId.ToString());
@@ -43,8 +40,6 @@ namespace AdminWeb.Controllers
                     ViewBag.Message = "Success";
                     return Redirect("/Home");
                 }
-                
-
             }
             ViewBag.Message = "Fail";
             return Redirect("/Login");
