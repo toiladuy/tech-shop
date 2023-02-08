@@ -32,7 +32,7 @@ namespace AdminWeb.Controllers
             {
                 var dataFashionContext = _context.Users.Include(u => u.Role);
                 var data = dataFashionContext.Where(s => s.Email.Equals(email) && s.Password.Equals(Pass) && s.Status == 1).ToList();
-                if (data.Count > 0 && data.Any(u => u.RoleId.Equals("Admin", StringComparison.OrdinalIgnoreCase)))
+                if (data.Count > 0)
                 {
                     HttpContext.Session.SetString("user", data.FirstOrDefault().Id.ToString());
                     HttpContext.Session.SetString("role", data.FirstOrDefault().RoleId.ToString());
