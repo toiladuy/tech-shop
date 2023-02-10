@@ -78,6 +78,7 @@ namespace Admin.Controllers
                 .Include(p => p.ProductBrandNavigation)
                 .Include(p => p.ProductSizeNavigation)
                 .Include(p => p.ProductTypeNavigation)
+                .Include(p => p.ProductColorNavigation)
                 .FirstOrDefault(m => m.Id == id);
             if (product == null)
             {

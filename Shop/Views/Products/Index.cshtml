@@ -150,8 +150,8 @@
                                                 @{
                                                     string[] arrListStr = item.ProductImage.Split(" ");
                                                 }
-                                                <img class="pri-img" src="/assets/img/product/@arrListStr[0]" alt="product">
-                                                <img class="sec-img" src="/assets/img/product/@arrListStr[1]" alt="product">
+                                                <img class="pri-img" src="https://localhost:44347/images/@arrListStr[0]" alt="product">
+                                                <img class="sec-img" src="https://localhost:44347/images/@arrListStr[1]" alt="product">
                                             </a>
                                             <div class="button-group">
                                                 <a asp-controller="AddOrder" asp-action="AddtoWishlist" asp-route-id="@item.Id" data-toggle="tooltip" title="Add to Wishlist"><i class="pe-7s-like"></i></a>
@@ -176,8 +176,8 @@
                                         <figure class="product-thumb">
                                             <a href="/Products/Details/@item.Id">
 
-                                                <img class="pri-img" src="/assets/img/product/@arrListStr[0]" alt="product">
-                                                <img class="sec-img" src="/assets/img/product/@arrListStr[1]" alt="product">
+                                                <img class="pri-img" src="https://localhost:44347/images/@arrListStr[0]" alt="product">
+                                                <img class="sec-img" src="https://localhost:44347/images/@arrListStr[1]" alt="product">
                                             </a>
                                         </figure>
                                         <div class="product-content-list">
@@ -213,7 +213,7 @@
                                                                 @for (int i = 0; i < arrListStr.Length - 1; i++)
                                                                 {
                                                                     <div class="pro-large-img img-zoom">
-                                                                        <img src="/assets/img/product/@arrListStr[i]" alt="product-details" />
+                                                                        <img src="https://localhost:44347/images/@arrListStr[i]" alt="product-details" />
                                                                     </div>
                                                                 }
 
@@ -223,7 +223,7 @@
                                                                 @for (int i = 0; i < arrListStr.Length - 1; i++)
                                                                 {
                                                                     <div class="pro-nav-thumb">
-                                                                        <img src="/assets/img/product/@arrListStr[i]" alt="product-details" />
+                                                                        <img src="https://localhost:44347/images/@arrListStr[i]" alt="product-details" />
                                                                     </div>
                                                                 }
 
@@ -330,7 +330,7 @@
                                             string[] arrListStr = ord.Product.ProductImage.Split(' ');
                                         }
                                         <a href="product-details.html">
-                                            <img src="/assets/img/product/@arrListStr[0]" alt="product">
+                                            <img src="https://localhost:44347/images/@arrListStr[0]" alt="product">
                                         </a>
                                     </div>
                                     <div class="minicart-content">

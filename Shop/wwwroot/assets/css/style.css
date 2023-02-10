@@ -3231,7 +3231,7 @@ textarea:focus {
 }
 
 .price-box {
-  font-size: 15px;
+  font-size: 2rem;
   line-height: 1;
 }
 
@@ -4899,22 +4899,22 @@ blockquote {
 /*----- product details content end ----*/
 /*----- reviews area start -----*/
 .product-review-info .nav.review-tab li a {
-  color: #fff;
-  display: block;
-  font-size: 16px;
-  line-height: 1;
-  font-weight: 500;
-  text-transform: capitalize;
-  padding: 8px 10px;
-  border: 1px solid #7267e9;
-  border-bottom: none;
-  background-color: #7267e9;
+    display: block;
+    font-size: 16px;
+    line-height: 1;
+    font-weight: 500;
+    text-transform: capitalize;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    color: #555555;
+    background-color: #fff;
 }
 
 .product-review-info .nav.review-tab li a:hover, .product-review-info .nav.review-tab li a.active {
-  color: #555555;
-  background-color: #fff;
-  border-color: #ddd;
+    color: #fff;
+    background-color: #7267e9;
+    border-color: #7267e9;
 }
 
 @media only screen and (max-width: 479.98px) {
