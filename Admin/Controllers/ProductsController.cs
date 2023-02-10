@@ -97,13 +97,13 @@ namespace Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                string[] spec = product.ProductSpec.Split("\n");
-                string spec_after = "";
-                foreach (var item in spec)
-                {
-                    spec_after += item + "@";
-                }
-                product.ProductSpec = spec_after;
+                //string[] spec = product.ProductSpec.Split("\n");
+                //string spec_after = "";
+                //foreach (var item in spec)
+                //{
+                //    spec_after += item + "@";
+                //}
+                //product.ProductSpec = spec_after;
                 string uniqueFileName = UploadedFile(product);
                 product.ProductImage = uniqueFileName;
                 product.ProductCode = GeneratePassword(4);
@@ -134,13 +134,13 @@ namespace Admin.Controllers
             }
 
             var product = await _context.Products.FindAsync(id);
-            string[] spec = product.ProductSpec.Split("@");
-            string spec_after = "";
-            foreach (var item in spec)
-            {
-                spec_after += item + "\n";
-            }
-            product.ProductSpec = spec_after;
+            //string[] spec = product.ProductSpec.Split("@");
+            //string spec_after = "";
+            //foreach (var item in spec)
+            //{
+            //    spec_after += item + "\n";
+            //}
+            //product.ProductSpec = spec_after;
             if (product == null)
             {
                 return NotFound();
@@ -168,13 +168,13 @@ namespace Admin.Controllers
             {
                 try
                 {
-                    string[] spec = product.ProductSpec.Split("\n");
-                    string spec_after = "";
-                    foreach (var item in spec)
-                    {
-                        spec_after += item + "@";
-                    }
-                    product.ProductSpec = spec_after;
+                    //string[] spec = product.ProductSpec.Split("\n");
+                    //string spec_after = "";
+                    //foreach (var item in spec)
+                    //{
+                    //    spec_after += item + "@";
+                    //}
+                    //product.ProductSpec = spec_after;
                     Debug.WriteLine("list " + product.ProfileImage);
                     if (product.ProfileImage == null)
                     {
