@@ -139,7 +139,7 @@
                         </div>
                         <!-- shop product top wrap start -->
                         <!-- product item list wrapper start -->
-                        <div class="shop-product-wrap grid-view row mbn-30">
+                        <div class="shop-product-wrap grid-view row mbn-30"> 
                             @foreach (var item in Model)
                             {
                                 <div class="col-md-4 col-sm-6">
@@ -165,7 +165,7 @@
                                                 <a href="/Products/Details/@item.Id">@item.ProductName</a>
                                             </h6>
                                             <div class="price-box">
-                                                <span class="price-regular">$@item.OutPrice.ToString("#,##0.00")</span>
+                                                <span class="price-regular">$@item.OutPrice.ToString("#,##0.#")</span>
                                                 
                                             </div>
                                         </div>
@@ -183,7 +183,7 @@
                                         <div class="product-content-list">
                                             <h5 class="product-name">  <a href="/Products/Details/@item.Id">@item.ProductName</a></h5>
                                             <div class="price-box">
-                                                <span class="price-regular">$@item.OutPrice.ToString("#,##0.00")</span>
+                                                <span class="price-regular">$@item.OutPrice.ToString("#,##0.#")</span>
                                                 <span class="price-old"><del>$70.00</del></span>
                                             </div>
                                             <p>
@@ -236,7 +236,7 @@
                                                                 <h3 class="product-name">@item.ProductName</h3>
 
                                                                 <div class="price-box">
-                                                                    <span class="price-regular">$@item.OutPrice.ToString("#,##0.00")</span>
+                                                                    <span class="price-regular">$@item.OutPrice.ToString("#,##0.#")</span>
                                                                     <span class="price-old"><del>$90.00</del></span>
                                                                 </div>
                                                                 <div class="availability">
