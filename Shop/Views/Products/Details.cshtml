@@ -98,41 +98,20 @@
                                     <div class="product-review-info">
                                         <ul class="nav review-tab">
                                             <li>
-                                                <a class="active" data-toggle="tab" href="#tab_one">description</a>
+                                                <a class="active" data-toggle="tab" href="#tab_one">Description</a>
                                             </li>
                                             <li>
-                                                <a data-toggle="tab" href="#tab_two">information</a>
+                                                <a data-toggle="tab" href="#tab_two">Specifications</a>
                                             </li>
                                           
                                         </ul>
                                         <div class="tab-content reviews-tab">
                                             <div class="tab-pane fade show active" id="tab_one">
-                                                <div class="tab-one">
-                                                    <p>
-                                                       @Model.ProductDescription
-                                                    </p>
-                                                </div>
+                                                @Html.Raw(@Model.ProductDescription)
                                             </div>
                                             <div class="tab-pane fade" id="tab_two">
-                                                @{ 
-                                                    string[] line = Model.ProductSpec.Split("@");
-                                                }
-                                                <table class="table table-bordered">
-                                                    <tbody>
-                                                        @foreach (var item in line)
-                                                        {
-                                                            string[] spec = item.Split("\t");
-                                                        <tr>
-                                                            @foreach (var item2 in spec)
-                                                            {
-                                                                <td>@item2</td>
-                                                            }
-                                                        </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
+                                                @Html.Raw(@Model.ProductSpec)
                                             </div>
-                                           
                                         </div>
                                     </div>
                                 </div>

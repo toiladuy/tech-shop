@@ -14,29 +14,38 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
+                <label asp-for="ProductName" class="control-label">Name</label>
                 <input asp-for="ProductName" class="form-control" />
                 <span asp-validation-for="ProductName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProductType" class="control-label"></label>
+                <label asp-for="ProductType" class="control-label">Type</label>
                 <select asp-for="ProductType" class="form-control" asp-items="ViewBag.ProductType"></select>
             </div>
             <div class="form-group">
-                <label asp-for="ProductColor" class="control-label"></label>
+                <label asp-for="ProductColor" class="control-label">Color</label>
                 <select asp-for="ProductColor" class="form-control" asp-items="ViewBag.ProductColor"></select>
             </div>
             <div class="form-group">
-                <label asp-for="ProductQuantity" class="control-label"></label>
+                <label asp-for="ProductQuantity" class="control-label">Quantity</label>
                 <input min="1" asp-for="ProductQuantity" class="form-control" />
                 <span asp-validation-for="ProductQuantity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProductBrand" class="control-label"></label>
+                <label asp-for="ProductBrand" class="control-label">Brand</label>
                 <select asp-for="ProductBrand" class="form-control" asp-items="ViewBag.ProductBrand"></select>
             </div>
             <div class="form-group">
-                <label asp-for="ProfileImage" class="control-label"></label>
+                <label class="control-label">State</label>
+                <select asp-for="ProductSize" class="form-control" asp-items="ViewBag.ProductSize"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="OutPrice" class="control-label">Price</label>
+                <input asp-for="OutPrice" class="form-control" />
+                <span asp-validation-for="OutPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProfileImage" class="control-label">Images</label>
                 <div class="custom-file">
                     <input asp-for="ProfileImage" class="custom-file-input" id="customFile" multiple>
                     <label class="custom-file-label" for="customFile">Choose file</label>
@@ -44,22 +53,13 @@
                 <span asp-validation-for="ProfileImage" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">ProductState</label>
-                <select asp-for="ProductSize" class="form-control" asp-items="ViewBag.ProductSize"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProductDescription" class="control-label"></label>
-                <input asp-for="ProductDescription" class="form-control" />
+                <label asp-for="ProductDescription" class="control-label">Description</label>
+                <textarea asp-for="ProductDescription" class="form-control" id="txt_desc" rows="5"></textarea>
                 <span asp-validation-for="ProductDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="OutPrice" class="control-label"></label>
-                <input asp-for="OutPrice" class="form-control" />
-                <span asp-validation-for="OutPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProductSpec" class="control-label"></label>
-                <textarea asp-for="ProductSpec" class="form-control" id="txt_spec"></textarea>
+                <label asp-for="ProductSpec" class="control-label">Specifications</label>
+                <textarea asp-for="ProductSpec" class="form-control" id="txt_spec" rows="5"></textarea>
                 <span asp-validation-for="ProductSpec" class="text-danger"></span>
             </div>
             <div class="form-group">

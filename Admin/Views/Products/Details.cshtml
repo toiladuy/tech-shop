@@ -11,76 +11,103 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.ProductCode)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ProductCode)
         </dd>
+
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.ProductName)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ProductName)
         </dd>
+
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.ProductQuantity)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ProductQuantity)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductImage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductImage)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductDescription)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductDescription)
-        </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.OutPrice)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.OutPrice)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductSpec)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductSpec)
-        </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ProductBrandNavigation)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductBrandNavigation.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProductBrandNavigation.Tilte)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ProductColorNavigation)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ProductColorNavigation.Title)
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ProductSizeNavigation)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductSizeNavigation.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProductSizeNavigation.Title)
         </dd>
+
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.ProductTypeNavigation)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductTypeNavigation.Id)
+            @Html.DisplayFor(model => model.ProductTypeNavigation.Tilte)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductImage)
+        </dt>
+        <dd class = "col-sm-10">
+            @{
+                string[] arrListStr = Model.ProductImage.Split(" ");
+                for (int i = 0; i < arrListStr.Length - 1; i++)
+                {
+                    <img src="~/images/@arrListStr[i]"
+                            class="rounded-circle"
+                            height="40" width="40"
+                            asp-append-version="true" />
+                }
+            }
+        </dd>
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductDescription)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.Raw(Model.ProductDescription)
+        </dd>
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ProductSpec)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.Raw(Model.ProductSpec)
         </dd>
     </dl>
 </div>
