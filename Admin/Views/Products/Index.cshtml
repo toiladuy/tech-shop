@@ -22,9 +22,6 @@
             <th>
                 Quantity
             </th>
-            @*<th>
-                Description
-            </th>*@
             <th>
                 Price
             </th>
@@ -65,11 +62,11 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.ProductQuantity)
                 </td>
-                @*<td>
-                    @Html.DisplayFor(modelItem => item.ProductDescription)
-                </td>*@
                 <td>
-                    @Html.DisplayFor(modelItem => item.OutPrice.ToString("#,##0.#"))
+                    @{
+                        var price = item.OutPrice.ToString("#,##0.#");
+                    }
+                    @Html.DisplayFor(modelItem => price)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ProductBrandNavigation.Tilte)
@@ -86,13 +83,11 @@
                 <td>
                     @if (item.Status == 1)
                     {
-
-
-                        <span style="color:seagreen">is active</span>
+                        <span style="color:seagreen">Active</span>
                     }
                     else
                     {
-                        <span style="color:red">not active</span>
+                        <span style="color:red">Not Active</span>
                     }
                 </td>
                 <td>
@@ -102,7 +97,7 @@
                         {
                             <img src="~/images/@arrListStr[i]"
                                  class="rounded-circle"
-                                 height="40" width="40"
+                                 width="60"
                                  asp-append-version="true" />
                         }
                     }

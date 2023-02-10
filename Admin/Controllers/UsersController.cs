@@ -90,9 +90,13 @@ namespace Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (_context.Users.Count(u => u.Email.Equals(user.Email)) > 0)
+                {
+                    return Redirect("/Users");
+                }
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                String from = "dangduy2910@gmail.com";
+                String from = "ititiu17081@hcmiu.edu.vn";
                 String passord = "";
                 MailUtils.SendMailGoogleSmtp(from, user.Email, "Password Dành Cho Nhân Viên ", "Password: " + user.Password + " Vui Lòng không chia sẽ mật khẩu cho bất kì ai",
                                             from, passord).Wait();

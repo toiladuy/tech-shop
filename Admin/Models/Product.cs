@@ -65,7 +65,7 @@ namespace Admin.Models
         [Display(Name = "Color")]
         public virtual Color ProductColorNavigation { get; set; }
 
-        [Display(Name = "Size")]
+        [Display(Name = "State")]
         public virtual Size ProductSizeNavigation { get; set; }
 
         [Display(Name = "Type")]
