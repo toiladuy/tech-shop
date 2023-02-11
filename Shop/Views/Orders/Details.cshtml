@@ -70,7 +70,7 @@
                                             @{
                                                 var pricetotla = item.Quantity * item.Price;
                                             }
-                                            <td class="pro-subtotal"><span>@pricetotla</span></td>
+                                            <td class="pro-subtotal"><span>@pricetotla?.ToString("#,##0.#")</span></td>
                                            
                                         </tr>
                                      
@@ -126,7 +126,7 @@
                                         </h6>
                                         <p>
                                             <span class="cart-quantity">@ord.Quantity<strong>&times;</strong></span>
-                                            <span class="cart-price">$@ord.Price</span>
+                                            <span class="cart-price">$@ord.Price?.ToString("#,##0.#")</span>
                                         </p>
                                     </div>
                                     <a href="/AddOrder/Delete/@ord.Id" class="minicart-remove"><i class="pe-7s-close"></i></a>
@@ -140,7 +140,7 @@
                     <ul>
                         <li class="total">
                             <span>total</span>
-                            <span><strong>$@totlalprice</strong></span>
+                            <span><strong>$@totlalprice.ToString("#,##0.#")</strong></span>
                         </li>
                     </ul>
                 </div>
