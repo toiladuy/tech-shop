@@ -26,7 +26,7 @@ namespace Shop.Controllers
         {
             var user = HttpContext.Session.GetString("user");
             var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(id));
-           
+
             if (user == null)
             {
                 return Redirect("/Login");
@@ -49,7 +49,8 @@ namespace Shop.Controllers
                         var checkProductExist = data.Where(s => s.ProductId.Equals(id) && s.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
                         var orderder = data.Where(x => x.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
                         if (checkProductExist.Count() > 0)
-                        {  if(product.FirstOrDefault().ProductQuantity - (checkProductExist.FirstOrDefault().Quantity + 1) < 0)
+                        {
+                            if (product.FirstOrDefault().ProductQuantity - (checkProductExist.FirstOrDefault().Quantity + 1) < 0)
                             {
                                 TempData["AlertType"] = "alert-success";
                                 TempData["AlertMessage"] = "Product is sold out";
@@ -154,7 +155,7 @@ namespace Shop.Controllers
         public IActionResult Checkout()
         {
             String note = "";
-            note =  HttpContext.Request.Form["ordernote"];
+            note = HttpContext.Request.Form["ordernote"];
             var user = HttpContext.Session.GetString("user");
             var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
             var checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
@@ -163,7 +164,7 @@ namespace Shop.Controllers
             _context.Orders.Update(checkOrderID);
             _context.SaveChanges();
             var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID.Id).ToArray();
-            foreach(OrderDetail orderDetail in ordetail)
+            foreach (OrderDetail orderDetail in ordetail)
             {
                 var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(orderDetail.ProductId));
                 product.FirstOrDefault().ProductQuantity = Convert.ToInt32(product.FirstOrDefault().ProductQuantity - orderDetail.Quantity);
@@ -182,7 +183,7 @@ namespace Shop.Controllers
 
                 throw;
             }
-            
+
             TempData["AlertType"] = "alert-success";
             TempData["AlertMessage"] = "Checkout successful";
             return Redirect("/Home");
@@ -190,6 +191,12 @@ namespace Shop.Controllers
 
         public ActionResult Payment()
         {
+            var user = HttpContext.Session.GetString("user");
+            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
+                .Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+            var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
+            var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
+
             //request params need to request to MoMo system
             string endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
             string partnerCode = "MOMO";
@@ -199,7 +206,7 @@ namespace Shop.Controllers
             string redirectUrl = "https://localhost:44398/AddOrder/Indexcheckout";
             string ipnUrl = "https://localhost:44398/AddOrder/Indexcheckout";
             string requestType = "captureWallet";
-            string amount = "1000";
+            double amount = finalPrice;
             string orderId = DateTime.Now.Ticks.ToString();
             string requestId = DateTime.Now.Ticks.ToString();
             string extraData = "";
@@ -242,6 +249,23 @@ namespace Shop.Controllers
             JObject jmessage = JObject.Parse(responseFromMomo);
 
             return Redirect(jmessage.GetValue("payUrl").ToString());
+        }
+
+        private Double CalculateTotalOrder(Order order, OrderDetail[] orderDetails)
+        {
+            double total = 0;
+            double sale = 0;
+            foreach (var item in orderDetails)
+            {
+                total += Convert.ToDouble(item.Quantity * item.Price);
+                if (order.VoucherId != null)
+                {
+                    var voucher = _context.Vouchers.First(v => v.Id == order.VoucherId);
+                    sale = Convert.ToDouble(voucher.VoucherDiscount);
+                }
+            }
+            var subtotal = total * sale / 100;
+            return total - subtotal;
         }
 
         //Khi thanh toán xong ở cổng thanh toán Momo, Momo sẽ trả về một số thông tin, trong đó có errorCode để check thông tin thanh toán
@@ -356,13 +380,13 @@ namespace Shop.Controllers
         public IActionResult Voucher()
         {
             double? percent = 0;
-         
+
             String voucher = HttpContext.Request.Form["vouchercode"];
             var user = HttpContext.Session.GetString("user");
-            var date=  _context.Vouchers.Where(x => x.VoucherCode.Equals(voucher)).FirstOrDefault().DeleteAt;
+            var date = _context.Vouchers.Where(x => x.VoucherCode.Equals(voucher)).FirstOrDefault().DeleteAt;
             var quanlity = _context.Vouchers.Where(x => x.VoucherCode.Equals(voucher)).FirstOrDefault().Quantity;
             Debug.WriteLine(date);
-            if(!date.ToString().Equals("") || quanlity == 0)
+            if (!date.ToString().Equals("") || quanlity == 0)
             {
                 TempData["AlertType"] = "alert-success";
                 TempData["AlertMessage"] = "Expired Voucher ";
@@ -375,7 +399,7 @@ namespace Shop.Controllers
             checkOrderExist.FirstOrDefault().VoucherId = _context.Vouchers.Where(x => x.VoucherCode.EndsWith(voucher)).FirstOrDefault().Id;
             _context.Orders.Update(checkOrderExist.FirstOrDefault());
             _context.SaveChanges();
-         
+
             return Redirect("/OrderDetails");
         }
         public IActionResult AddtoWishlist(int? id)

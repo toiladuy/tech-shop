@@ -130,9 +130,12 @@
                                         }
                                     }
                                 }
-                                <h6>Cart Totals : @total.ToString("#,##0.#")</h6>
                                 <div class="table-responsive">
                                     <table class="table">
+                                        <tr>
+                                            <td>Cart Total</td>
+                                            <td>$@total.ToString("#,##0.#")</td>
+                                        </tr>
                                         <tr>
                                             @{ var subtotal = total * sale / 100; }
                                             <td>Sub Total</td>

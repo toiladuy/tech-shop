@@ -30,7 +30,7 @@
             <div class="container">
                 <div class="row">
                     <!-- Checkout Billing Details -->
-                    <div class="col-lg-6">
+                    <div class="col-lg-5">
                         @{
                             IEnumerable<User> DetailUser = ViewData["User"] as IEnumerable<User>;
                             foreach (User user in DetailUser)
@@ -73,7 +73,7 @@
                     </div>
 
                     <!-- Order Summary Details -->
-                    <div class="col-lg-6">
+                    <div class="col-lg-7">
                         <div class="order-summary-details">
                             <h4 class="checkout-title">Your Order Summary</h4>
                             <div class="order-summary-content">
