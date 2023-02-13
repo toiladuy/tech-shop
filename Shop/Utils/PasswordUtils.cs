@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Shop.Utils
 {
+    /// <summary>
+    /// https://chandradev819.com/2011/04/11/how-to-encrypt-and-decrypt-password-in-asp-net-using-c/
+    /// </summary>
     public class PasswordUtils
     {
         public static string ComputeHash(string plainText, byte[] saltBytes)
