@@ -63,7 +63,7 @@ namespace Shop.Controllers
         {
             if (ModelState.IsValid)
             {
-                user.Password = PasswordUtils.Encrypt(user.Password);
+                user.Password = PasswordUtils.ComputeHash(user.Password, null);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -96,7 +96,7 @@ namespace Shop.Controllers
                         ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
                     }
                 }
-                catch (Exception e)
+                catch
                 {
                     ViewData["orderdeatail"] = null;
                 }
@@ -143,7 +143,7 @@ namespace Shop.Controllers
                     var User = HttpContext.Session.GetString("user");
                     user.Id = Int32.Parse(User);
                     user.Status = 1;
-                    user.Password = PasswordUtils.Encrypt(user.Password);
+                    user.Password = PasswordUtils.ComputeHash(user.Password, null);
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -244,7 +244,7 @@ namespace Shop.Controllers
                 if (checkUser.ToList().Count > 0)
                 {
                     string newPassword = GeneratePassword(8);
-                    checkUser.FirstOrDefault().Password = PasswordUtils.Encrypt(newPassword);
+                    checkUser.FirstOrDefault().Password = PasswordUtils.ComputeHash(newPassword, null);
                     _context.Update(checkUser.FirstOrDefault());
                     _context.SaveChanges();
                     MailUtils.SendMailGoogleSmtp(email, "Password Mới của bạn là ", "Password:: " + newPassword + "  + Vui Lòng không chia sẽ mật khẩu cho bất kì ai").Wait();

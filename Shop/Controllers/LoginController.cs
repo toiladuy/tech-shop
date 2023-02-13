@@ -52,9 +52,8 @@ namespace AdminWeb.Controllers
             string btnLogin = HttpContext.Request.Form["login"];
             if (btnLogin != null)
             {
-                string encryptedPassword = PasswordUtils.Encrypt(password);
                 var dataFashionContext = _context.Users.Include(u => u.Role);
-                var data = dataFashionContext.Where(s => s.Email.Equals(email) && s.Password.Equals(encryptedPassword) && s.Status == 1).ToList();
+                var data = dataFashionContext.Where(s => s.Email.Equals(email) && PasswordUtils.VerifyHash(password, s.Password) && s.Status == 1).ToList();
                 if (data.Count > 0)
                 {
                     HttpContext.Session.SetString("user", data.FirstOrDefault().Id.ToString());
@@ -90,7 +89,7 @@ namespace AdminWeb.Controllers
                 }
                 else
                 {
-                    user.Password = PasswordUtils.Encrypt(user.Password);
+                    user.Password = PasswordUtils.ComputeHash(user.Password, null);
                     user.Status = 1;
                     user.RoleId = "Customer";
                     _context.Users.Add(user);
