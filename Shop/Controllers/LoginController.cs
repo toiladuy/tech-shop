@@ -7,6 +7,7 @@ using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Shop.Utils;
 
 namespace AdminWeb.Controllers
 {
@@ -20,7 +21,7 @@ namespace AdminWeb.Controllers
         public IActionResult Index()
         {
             var user = HttpContext.Session.GetString("user");
-            if(user != null)
+            if (user != null)
             {
                 return Redirect("/Home");
             }
@@ -28,7 +29,7 @@ namespace AdminWeb.Controllers
             {
                 return View();
             }
-           
+
         }
         public IActionResult IndexRes()
         {
@@ -42,26 +43,27 @@ namespace AdminWeb.Controllers
                 return View();
             }
         }
-   
+
         [HttpPost]
         public ActionResult LoginAdmin()
         {
-            String email = HttpContext.Request.Form["Email"];
-            String Pass = HttpContext.Request.Form["pass"];
-            String btnLogin = HttpContext.Request.Form["login"];
-            if(btnLogin != null)
+            string email = HttpContext.Request.Form["Email"];
+            string password = HttpContext.Request.Form["pass"];
+            string btnLogin = HttpContext.Request.Form["login"];
+            if (btnLogin != null)
             {
+                string encryptedPassword = PasswordUtils.Encrypt(password);
                 var dataFashionContext = _context.Users.Include(u => u.Role);
-                var data = dataFashionContext.Where(s => s.Email.Equals(email) && s.Password.Equals(Pass) && s.Status == 1 ).ToList();
-                if(data.Count > 0)
+                var data = dataFashionContext.Where(s => s.Email.Equals(email) && s.Password.Equals(encryptedPassword) && s.Status == 1).ToList();
+                if (data.Count > 0)
                 {
                     HttpContext.Session.SetString("user", data.FirstOrDefault().Id.ToString());
-                    
+
                     TempData["AlertType"] = "alert-success";
                     TempData["AlertMessage"] = "Login Success";
                     return Redirect("/Home");
                 }
-                
+
 
             }
             TempData["AlertType"] = "alert-warning";
@@ -75,18 +77,12 @@ namespace AdminWeb.Controllers
             return Redirect("/Login");
         }
         [HttpPost]
-        public ActionResult Res()
+        [ValidateAntiForgeryToken]
+        public ActionResult RegisterUser([Bind("Email,Password,Fullname,Phone,Address")] User user)
         {
-          //  Id,Email,Password,Fullname,Phone,Address,Status,RoleId
-               String email = HttpContext.Request.Form["Email"];
-            String Pass = HttpContext.Request.Form["Password"];
-            String Fullname = HttpContext.Request.Form["Fullname"];
-            String Address = HttpContext.Request.Form["Address"];
-            String Phone = HttpContext.Request.Form["Phone"];
-            String btnRes= HttpContext.Request.Form["res"];
-            if(btnRes != null)
+            if (ModelState.IsValid)
             {
-                if (checkEmailExist(email) == false)
+                if (checkEmailExist(user.Email) == false)
                 {
                     TempData["AlertType"] = "alert-warning";
                     TempData["AlertMessage"] = "Email is Exist";
@@ -94,12 +90,7 @@ namespace AdminWeb.Controllers
                 }
                 else
                 {
-                    User user = new User();
-                    user.Email = email;
-                    user.Password = Pass;
-                    user.Address = Address;
-                    user.Phone = Phone;
-                    user.Fullname = Fullname;
+                    user.Password = PasswordUtils.Encrypt(user.Password);
                     user.Status = 1;
                     user.RoleId = "Customer";
                     _context.Users.Add(user);
@@ -108,13 +99,12 @@ namespace AdminWeb.Controllers
                     TempData["AlertMessage"] = "Success";
                     return Redirect("/Login");
                 }
-            
             }
             TempData["AlertType"] = "alert-warning";
             TempData["AlertMessage"] = "Fail";
             return Redirect("/Login");
         }
-     
+
         public ActionResult ChangeInfo()
         {
             String email = HttpContext.Request.Form["Email"];
@@ -123,8 +113,8 @@ namespace AdminWeb.Controllers
             String Address = HttpContext.Request.Form["Address"];
             String Phone = HttpContext.Request.Form["Phone"];
             String btnRes = HttpContext.Request.Form["res"];
-           
-             if (btnRes != null)
+
+            if (btnRes != null)
             {
                 if (checkEmailExist(email) == false)
                 {
@@ -146,7 +136,7 @@ namespace AdminWeb.Controllers
                     ViewBag.Message = "Success";
                     return Redirect("/Login");
                 }
-               
+
             }
             return Redirect("");
         }
@@ -154,7 +144,7 @@ namespace AdminWeb.Controllers
         {
             var dataFashionContext = _context.Users.Include(u => u.Role);
             var data = dataFashionContext.Where(s => s.Email.Equals(Email)).ToList();
-            if(data.Count() > 0)
+            if (data.Count() > 0)
             {
                 return false;
             }
@@ -162,8 +152,8 @@ namespace AdminWeb.Controllers
             {
                 return true;
             }
-          
+
         }
-          
+
     }
 }
