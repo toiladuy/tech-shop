@@ -45,30 +45,31 @@ namespace AdminWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult LoginAdmin()
+        public ActionResult Login()
         {
             string email = HttpContext.Request.Form["Email"];
             string password = HttpContext.Request.Form["pass"];
             string btnLogin = HttpContext.Request.Form["login"];
             if (btnLogin != null)
             {
-                var dataFashionContext = _context.Users.Include(u => u.Role);
-                var data = dataFashionContext.Where(s => s.Email.Equals(email) && PasswordUtils.VerifyHash(password, s.Password) && s.Status == 1).ToList();
-                if (data.Count > 0)
+                var data = _context.Users.Include(u => u.Role).Where(s => s.Email.Equals(email) && s.Status == 1).ToList();
+                foreach (User user in data)
                 {
-                    HttpContext.Session.SetString("user", data.FirstOrDefault().Id.ToString());
+                    if (PasswordUtils.VerifyHash(password, user.Password))
+                    {
+                        HttpContext.Session.SetString("user", data.FirstOrDefault().Id.ToString());
 
-                    TempData["AlertType"] = "alert-success";
-                    TempData["AlertMessage"] = "Login Success";
-                    return Redirect("/Home");
+                        TempData["AlertType"] = "alert-success";
+                        TempData["AlertMessage"] = "Login Success";
+                        return Redirect("/Home");
+                    }
                 }
-
-
             }
             TempData["AlertType"] = "alert-warning";
             TempData["AlertMessage"] = "Wrong pass or Email";
             return Redirect("/Login");
         }
+
         public ActionResult Logout()
         {
             HttpContext.Session.Clear();
