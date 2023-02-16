@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shop.Models;
+using Shop.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Shop.Controllers
@@ -249,6 +254,44 @@ namespace Shop.Controllers
             JObject jmessage = JObject.Parse(responseFromMomo);
 
             return Redirect(jmessage.GetValue("payUrl").ToString());
+        }
+
+        public async Task<ActionResult> PayWithZaloPay()
+        {
+            var user = HttpContext.Session.GetString("user");
+            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
+                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+            var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
+            var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
+
+            string endpoint = "https://sb-openapi.zalopay.vn/v2/create";
+            string redirectUrl = "https://localhost:44398/AddOrder/Indexcheckout";
+            string appId = "2554";
+            long currentTs = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            string appTransId = DateTime.Now.ToString("yyMMdd") + "_" + checkOrder.OrderId + "_" + currentTs;
+            string appUser = "PH-Tech";
+            string key1 = "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn";
+            var embedData = new Dictionary<string, string> { { "redirecturl", redirectUrl } };
+            string item = "[]";
+            string rawHash = appId + "|" + appTransId + "|" + appUser + "|" + finalPrice + "|" + currentTs + "|" + JsonConvert.SerializeObject(embedData) + "|" + item;
+            string hmac = HmacUtils.Compute(key1, rawHash);
+
+            var param = new Dictionary<string, string>
+            {
+                { "app_id", appId },
+                { "app_trans_id", appTransId },
+                { "app_user", appUser },
+                { "app_time", currentTs.ToString() },
+                { "amount", finalPrice.ToString() },
+                { "item", item },
+                { "description", "PH-Tech - Thanh toán đơn hàng #" + appTransId },
+                { "embed_data", JsonConvert.SerializeObject(embedData) },
+                { "bank_code", "SBI" },
+                { "mac", hmac }
+            };
+
+            var result = await HttpUtils.PostFormAsync<JObject>(endpoint, param);
+            return Redirect(result.GetValue("order_url").ToString());
         }
 
         private Double CalculateTotalOrder(Order order, OrderDetail[] orderDetails)
