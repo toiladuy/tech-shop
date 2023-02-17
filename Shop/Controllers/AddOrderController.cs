@@ -133,7 +133,6 @@ namespace Shop.Controllers
         }
         public IActionResult Indexcheckout()
         {
-
             var user = HttpContext.Session.GetString("user");
             int? checkOrderID = 0;
             if (user != null)
@@ -156,11 +155,11 @@ namespace Shop.Controllers
                 return Redirect("/Login");
             }
         }
+
         [HttpPost]
         public IActionResult Checkout()
         {
-            String note = "";
-            note = HttpContext.Request.Form["ordernote"];
+            String note = HttpContext.Request.Form["ordernote"];
             var user = HttpContext.Session.GetString("user");
             var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
             var checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
@@ -265,13 +264,18 @@ namespace Shop.Controllers
             var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
 
             string endpoint = "https://sb-openapi.zalopay.vn/v2/create";
-            string redirectUrl = "https://localhost:44398/AddOrder/Indexcheckout";
+            string redirectUrl = "https://localhost:44398/AddOrder/Postback";
+            //string redirectUrl = "https://en84wptf3t8f6.x.pipedream.net";
             string appId = "2554";
             long currentTs = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            string appTransId = DateTime.Now.ToString("yyMMdd") + "_" + checkOrder.OrderId + "_" + currentTs;
+            string appTransId = DateTime.Now.ToString("yyMMdd") + "_" + checkOrder.OrderId + "_" + new Random().Next(1000);
             string appUser = "PH-Tech";
             string key1 = "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn";
-            var embedData = new Dictionary<string, string> { { "redirecturl", redirectUrl } };
+            var embedData = new Dictionary<string, string> {
+                { "redirecturl", redirectUrl },
+                { "orderId", checkOrder.Id.ToString() },
+                { "orderNumber", checkOrder.OrderId }
+            };
             string item = "[]";
             string rawHash = appId + "|" + appTransId + "|" + appUser + "|" + finalPrice + "|" + currentTs + "|" + JsonConvert.SerializeObject(embedData) + "|" + item;
             string hmac = HmacUtils.Compute(key1, rawHash);
@@ -286,12 +290,55 @@ namespace Shop.Controllers
                 { "item", item },
                 { "description", "PH-Tech - Thanh toán đơn hàng #" + appTransId },
                 { "embed_data", JsonConvert.SerializeObject(embedData) },
-                { "bank_code", "SBI" },
-                { "mac", hmac }
+                { "bank_code", "zalopayapp" },
+                { "mac", hmac },
+                { "callback_url", redirectUrl }
             };
 
             var result = await HttpUtils.PostFormAsync<JObject>(endpoint, param);
             return Redirect(result.GetValue("order_url").ToString());
+        }
+
+        [HttpPost]
+        public IActionResult Postback([FromBody] dynamic cbdata)
+        {
+            var result = new Dictionary<string, object>();
+
+            try
+            {
+                var dataStr = Convert.ToString(cbdata["data"]);
+                var reqMac = Convert.ToString(cbdata["mac"]);
+                string key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
+                var mac = HmacUtils.Compute(key2, dataStr);
+
+                Console.WriteLine("mac = {0}", mac);
+
+                // kiểm tra callback hợp lệ (đến từ ZaloPay server)
+                if (!reqMac.Equals(mac))
+                {
+                    // callback không hợp lệ
+                    result["return_code"] = -1;
+                    result["return_message"] = "mac not equal";
+                }
+                else
+                {
+                    // thanh toán thành công
+                    // merchant cập nhật trạng thái cho đơn hàng
+                    var dataJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(dataStr);
+                    Console.WriteLine("update order's status = success where app_trans_id = {0}", dataJson["app_trans_id"]);
+
+                    result["return_code"] = 1;
+                    result["return_message"] = "success";
+                }
+            }
+            catch (Exception ex)
+            {
+                result["return_code"] = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
+                result["return_message"] = ex.Message;
+            }
+
+            // thông báo kết quả cho ZaloPay server
+            return Ok(result);
         }
 
         private Double CalculateTotalOrder(Order order, OrderDetail[] orderDetails)
