@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Shop.Models.OrderDetail>
+@{
+    ViewData["Title"] = "Checkout Success";
+    Order order = ViewData["Order"] as Order;
+}
+
+<main>
+    <!-- breadcrumb area start -->
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb-wrap">
+                        <nav aria-label="breadcrumb">
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/Home"><i class="fa fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="/Products">Shop</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">checkout</li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- breadcrumb area end -->
+    <!-- checkout main wrapper start -->
+
+    <div class="checkout-page-wrapper section-padding">
+        <div class="container border-bottom mt-3 mb-3 pb-3">
+            <h2 class="checkout-title">Thank you for your purchase</h2>
+            <p>Your order number is: <strong>@ViewData["OrderNumber"]</strong>.</p>
+            <p>We received your order and will begin processing it soon.</p>
+        </div>
+
+        <div class="container border-bottom mt-3 mb-3 pb-3">
+            <h3>Shipping Address</h3>
+            @{
+                User user = ViewData["User"] as User;
+                <div class="row">
+                    <div class="col-lg-2">Name:</div>
+                    <p class="col-lg-9">@user.Fullname</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">Address:</div>
+                    <p class="col-lg-9">@user.Address</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">Phone:</div>
+                    <p class="col-lg-9">@user.Phone</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">Note:</div>
+                    <p class="col-lg-9">@order.Note</p>
+                </div>
+            }
+        </div>
+
+        <div class="container border-bottom mt-3 mb-3 pb-3">
+            <h3>Items</h3>
+            <div class="row">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Products</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            IEnumerable<Product> products = ViewData["Product"] as IEnumerable<Product>;
+                            foreach (var orderDetail in Model)
+                            {
+                                Product product = null;
+                                foreach (Product pro in products)
+                                {
+                                    if (orderDetail.ProductId.Equals(pro.Id))
+                                    {
+                                        product = pro;
+                                        break;
+                                    }
+                                }
+
+                                if (product == null)
+                                {
+                                    continue;
+                                }
+
+                                string[] arrListStr = product.ProductImage.Split(" ");
+
+                                <tr>
+                                    <td>
+                                        @if (arrListStr.Length > 0)
+                                        {
+                                            <img src="https://localhost:44347/images/@arrListStr[0]" class="rounded-circle" width="160" />
+                                        }
+                                    </td>
+                                    <td>@product.ProductName</td>
+                                    <td class="text-center">@orderDetail.Quantity</td>
+                                    <td class="text-right">$@orderDetail.Price?.ToString("#,##0.#")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        @{
+                            double subTotal = 0;
+                            double discount = 0;
+                            foreach (var item in Model)
+                            {
+                                subTotal += Convert.ToDouble(item.Quantity * item.Price);
+                            }
+                            if (order.Voucher != null)
+                            {
+                                discount = Math.Round(Convert.ToDouble(order.Voucher.VoucherDiscount) * subTotal, 2);
+                            }
+                        }
+                        <tr>
+                            <td colspan="3">Sub Total</td>
+                            <td class="text-right">$@subTotal.ToString("#,##0.#")</td>
+                        </tr>
+                        @if (order.Voucher != null)
+                        {
+                            <tr>
+                                <td colspan="3">Voucher code: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
+                                <td class="text-right">$@discount</td>
+                            </tr>
+                        }
+                        <tr>
+                            @{
+                                double total = subTotal - discount;
+                            }
+                            <td colspan="3"><strong>Total</strong></td>
+                            <td class="text-right"><strong>$@total.ToString("#,##0.#")</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <!-- checkout main wrapper end -->
+</main>
