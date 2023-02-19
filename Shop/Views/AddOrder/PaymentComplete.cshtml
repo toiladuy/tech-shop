@@ -27,6 +27,7 @@
     <div class="checkout-page-wrapper section-padding">
         @{
             bool isPaymentSuccess = (bool)ViewData["IsPaymentSuccess"];
+            bool isCOD = (bool)ViewData["IsCOD"];
             Order order = ViewData["Order"] as Order;
         }
 
@@ -36,7 +37,14 @@
             <div class="container border-bottom mt-3 mb-3 pb-3">
                 <h2 class="checkout-title">Thank you for your purchase</h2>
                 <p>Your order number is: <strong>@ViewData["OrderNumber"]</strong>.</p>
-                <p>We received your order and will begin processing it soon.</p>
+                @if (isCOD)
+                {
+                    <p>We received your order and will contact you soon prior to processing it.</p>
+                }
+                else
+                {
+                    <p>We received your order and will begin processing it soon.</p>
+                }
             </div>
 
             <div class="container border-bottom mt-3 mb-3 pb-3">

@@ -162,19 +162,15 @@ namespace Shop.Controllers
         }
 
         [HttpPost]
-        public IActionResult Checkout()
+        public ActionResult PlaceCOD()
         {
             var user = HttpContext.Session.GetString("user");
-            if (user == null) return Redirect("/Login");
             var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
             checkOrder.Note = HttpContext.Request.Form["ordernote"];
             _context.Orders.Update(checkOrder);
             _context.SaveChanges();
             onCheckoutDone();
-
-            TempData["AlertType"] = "alert-success";
-            TempData["AlertMessage"] = "Checkout successful";
-            return Redirect("/Home");
+            return Redirect("PaymentComplete");
         }
 
         private void onCheckoutDone()
@@ -212,7 +208,122 @@ namespace Shop.Controllers
             }
         }
 
-        public ActionResult Payment()
+        [HttpPost]
+        public async Task<ActionResult> PayViaZaloPay()
+        {
+            var user = HttpContext.Session.GetString("user");
+            if (user == null)
+            {
+                return Redirect("/Login");
+            }
+            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
+                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+            var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
+            var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
+            string redirectUrl = "https://localhost:44398/AddOrder/PaymentComplete";
+            string callbackUrl = "https://localhost:44398/AddOrder/PaymentCallback";
+            var postbackData = new Dictionary<string, string> {
+                { "orderId", checkOrder.Id.ToString() },
+                { "orderNumber", checkOrder.OrderId }
+            };
+            var orderPaymentUrl = await ZaloPayService.CreateOrder(checkOrder.OrderId, finalPrice, redirectUrl, callbackUrl, postbackData);
+            return Redirect(orderPaymentUrl);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PaymentComplete([FromQuery(Name = "apptransid")] string appTransId)
+        {
+            var user = HttpContext.Session.GetString("user");
+            if (user == null) return Redirect("/Login");
+
+            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.UserId.Equals(int.Parse(user))).FirstOrDefault();
+            if (checkOrder == null)
+            {
+                TempData["AlertType"] = "alert-warning";
+                TempData["AlertMessage"] = "Cart is empty";
+                return Redirect("/Home");
+            }
+            ViewData["Order"] = checkOrder;
+            ViewData["OrderNumber"] = checkOrder.OrderId;
+            ViewData["User"] = _context.Users.Include(u => u.Role).First(x => x.Id.Equals(Int32.Parse(user)));
+            ViewData["Product"] = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation);
+            ViewData["Voucher"] = _context.Vouchers;
+            var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToList();
+
+            if (!string.IsNullOrEmpty(appTransId))
+            {
+                ViewData["IsCOD"] = false;
+                var paymentSuccess = await ZaloPayService.IsOrderSuccess(appTransId);
+                if (paymentSuccess)
+                {
+                    ViewData["IsPaymentSuccess"] = true;
+                    onCheckoutDone();
+                    return View(orderDetails);
+                }
+                else
+                {
+                    ViewData["IsPaymentSuccess"] = false;
+                    return View();
+                }
+            }
+            else if (checkOrder.Status != 1)
+            {
+                // COD
+                ViewData["IsPaymentSuccess"] = true;
+                ViewData["IsCOD"] = true;
+                return View(orderDetails);
+            }
+            else
+            {
+                return Redirect("/AddOrder/Indexcheckout");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult PaymentCallback([FromBody] Dictionary<string, object> cbdata)
+        {
+            Debug.WriteLine("Callback = {0}", cbdata);
+
+            //var result = new Dictionary<string, object>();
+
+            //try
+            //{
+            //    var dataStr = Convert.ToString(cbdata["data"]);
+            //    var reqMac = Convert.ToString(cbdata["mac"]);
+            //    string key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
+            //    var mac = HmacUtils.Compute(key2, dataStr);
+
+            //    Console.WriteLine("mac = {0}", mac);
+
+            //    // kiểm tra callback hợp lệ (đến từ ZaloPay server)
+            //    if (!reqMac.Equals(mac))
+            //    {
+            //        // callback không hợp lệ
+            //        result["return_code"] = -1;
+            //        result["return_message"] = "mac not equal";
+            //    }
+            //    else
+            //    {
+            //        // thanh toán thành công
+            //        // merchant cập nhật trạng thái cho đơn hàng
+            //        var dataJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(dataStr);
+            //        Console.WriteLine("update order's status = success where app_trans_id = {0}", dataJson["app_trans_id"]);
+
+            //        result["return_code"] = 1;
+            //        result["return_message"] = "success";
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    result["return_code"] = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
+            //    result["return_message"] = ex.Message;
+            //}
+
+            // thông báo kết quả cho ZaloPay server
+            return Ok(cbdata);
+        }
+
+        public ActionResult PayViaMomo()
         {
             var user = HttpContext.Session.GetString("user");
             var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
@@ -274,113 +385,6 @@ namespace Shop.Controllers
             return Redirect(jmessage.GetValue("payUrl").ToString());
         }
 
-        public async Task<ActionResult> PayWithZaloPay()
-        {
-            var user = HttpContext.Session.GetString("user");
-            if (user == null)
-            {
-                return Redirect("/Login");
-            }
-            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
-                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
-            var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
-            var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
-            string redirectUrl = "https://localhost:44398/AddOrder/PaymentPostback";
-            string callbackUrl = "https://localhost:44398/AddOrder/PaymentPostback";
-            var postbackData = new Dictionary<string, string> {
-                { "orderId", checkOrder.Id.ToString() },
-                { "orderNumber", checkOrder.OrderId }
-            };
-            var orderPaymentUrl = await ZaloPayService.CreateOrder(checkOrder.OrderId, finalPrice, redirectUrl, callbackUrl, postbackData);
-            return Redirect(orderPaymentUrl);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> PaymentPostback([FromQuery(Name = "apptransid")] string appTransId)
-        {
-            var user = HttpContext.Session.GetString("user");
-            if (user == null) return Redirect("/Login");
-
-            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
-                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
-            if (checkOrder == null)
-            {
-                TempData["AlertType"] = "alert-warning";
-                TempData["AlertMessage"] = "Cart is empty";
-                return Redirect("/Home");
-            }
-            ViewData["Order"] = checkOrder;
-            ViewData["OrderNumber"] = checkOrder.OrderId;
-            ViewData["User"] = _context.Users.Include(u => u.Role).First(x => x.Id.Equals(Int32.Parse(user)));
-            ViewData["Product"] = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation);
-            ViewData["Voucher"] = _context.Vouchers;
-
-            if (!string.IsNullOrEmpty(appTransId))
-            {
-                var paymentSuccess = await ZaloPayService.IsOrderSuccess(appTransId);
-                if (paymentSuccess)
-                {
-                    ViewData["IsPaymentSuccess"] = true;
-                    onCheckoutDone();
-                    var detailsCtx = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id);
-                    return View(detailsCtx.ToList());
-                }
-                else
-                {
-                    ViewData["IsPaymentSuccess"] = false;
-                    return View();
-                }
-            }
-            else
-            {
-                return Redirect("/AddOrder/Indexcheckout");
-            }
-        }
-
-        [HttpPost]
-        public IActionResult PaymentPostback([FromBody] Dictionary<string, object> cbdata)
-        {
-            Debug.WriteLine("Callback = {0}", cbdata);
-
-            //var result = new Dictionary<string, object>();
-
-            //try
-            //{
-            //    var dataStr = Convert.ToString(cbdata["data"]);
-            //    var reqMac = Convert.ToString(cbdata["mac"]);
-            //    string key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
-            //    var mac = HmacUtils.Compute(key2, dataStr);
-
-            //    Console.WriteLine("mac = {0}", mac);
-
-            //    // kiểm tra callback hợp lệ (đến từ ZaloPay server)
-            //    if (!reqMac.Equals(mac))
-            //    {
-            //        // callback không hợp lệ
-            //        result["return_code"] = -1;
-            //        result["return_message"] = "mac not equal";
-            //    }
-            //    else
-            //    {
-            //        // thanh toán thành công
-            //        // merchant cập nhật trạng thái cho đơn hàng
-            //        var dataJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(dataStr);
-            //        Console.WriteLine("update order's status = success where app_trans_id = {0}", dataJson["app_trans_id"]);
-
-            //        result["return_code"] = 1;
-            //        result["return_message"] = "success";
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    result["return_code"] = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
-            //    result["return_message"] = ex.Message;
-            //}
-
-            // thông báo kết quả cho ZaloPay server
-            return Ok(cbdata);
-        }
-
         private Double CalculateTotalOrder(Order order, OrderDetail[] orderDetails)
         {
             double total = 0;
@@ -417,7 +421,7 @@ namespace Shop.Controllers
             }
             else
             {
-                Checkout();
+                PlaceCOD();
             }
             return RedirectToAction("Index");
 
