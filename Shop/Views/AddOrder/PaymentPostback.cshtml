@@ -26,7 +26,7 @@
     <!-- checkout main wrapper start -->
     <div class="checkout-page-wrapper section-padding">
         @{
-            bool isPaymentSuccess = ViewData["IsPaymentSuccess"] as bool;
+            bool isPaymentSuccess = (bool)ViewData["IsPaymentSuccess"];
             Order order = ViewData["Order"] as Order;
         }
 

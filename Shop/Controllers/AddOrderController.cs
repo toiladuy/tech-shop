@@ -109,7 +109,7 @@ namespace Shop.Controllers
                         double price = _context.Products.Where(x => x.Id.Equals(id)).FirstOrDefault().OutPrice;
                         Order order = new Order();
                         order.CreateAt = DateTime.Now;
-                        order.OrderId = GenerateOrderID(8);
+                        order.OrderId = GenerateOrderID(6);
                         order.TotalPrice = price;
                         order.Status = 1;
                         order.UserId = Int32.Parse(user);
@@ -281,12 +281,8 @@ namespace Shop.Controllers
             {
                 return Redirect("/Login");
             }
-            string note = HttpContext.Request.Form["ordernote"];
             var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
                 .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
-            checkOrder.Note = note;
-            _context.Orders.Update(checkOrder);
-            _context.SaveChanges();
             var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
             var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
             string redirectUrl = "https://localhost:44398/AddOrder/PaymentPostback";

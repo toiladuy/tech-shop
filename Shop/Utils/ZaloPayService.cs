@@ -15,7 +15,7 @@ namespace Shop.Utils
         {
             string endpoint = "https://sb-openapi.zalopay.vn/v2/create";
             long currentTs = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            string appTransId = DateTime.Now.ToString("yyMMdd") + "_" + orderId + "_" + new Random().Next(1000);
+            string appTransId = DateTime.Now.ToString("yyMMdd") + "_" + orderId + "_" + new Random().Next(9999);
             string appUser = "PH-Tech";
             var embedData = new Dictionary<string, string>(postbackData)
             {
