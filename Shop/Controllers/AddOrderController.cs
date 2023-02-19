@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -135,23 +136,31 @@ namespace Shop.Controllers
 
         public IActionResult Indexcheckout()
         {
-            var user = HttpContext.Session.GetString("user");
-            if (user == null)
+            var userId = HttpContext.Session.GetString("user");
+            if (userId == null)
             {
                 return Redirect("/Login");
             }
+            var uid = int.Parse(userId);
+            var user = _context.Users.FirstOrDefault(u => u.Id.Equals(uid));
+            if (user == null || user.Status == 0)
+            {
+                TempData["AlertType"] = "alert-warning";
+                TempData["AlertMessage"] = "Your account has not been activated yet.";
+                return Redirect("/Login/CheckActivation");
+            }
 
             var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrder = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+            var checkOrder = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(userId)) && s.Status.Equals(1)).FirstOrDefault();
             if (checkOrder == null)
             {
                 TempData["AlertType"] = "alert-warning";
-                TempData["AlertMessage"] = "Cart is empty";
+                TempData["AlertMessage"] = "Cart is empty.";
                 return Redirect("/Home");
             }
 
             ViewData["Order"] = checkOrder;
-            ViewData["User"] = _context.Users.Include(u => u.Role).Where(x => x.Id.Equals(Int32.Parse(user)));
+            ViewData["User"] = _context.Users.Include(u => u.Role).Where(x => x.Id.Equals(Int32.Parse(userId)));
             ViewData["Product"] = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation);
             ViewData["Voucher"] = _context.Vouchers;
             var detailsCtx = _context.OrderDetails

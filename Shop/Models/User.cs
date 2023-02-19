@@ -24,6 +24,7 @@ namespace Shop.Models
         public string RoleId { get; set; }
 
         public virtual Role Role { get; set; }
+        public virtual UserActivation UserActivation { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<WarehouseDetail> WarehouseDetails { get; set; }
         public virtual ICollection<Warehouse> Warehouses { get; set; }

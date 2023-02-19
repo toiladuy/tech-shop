@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
@@ -29,18 +27,14 @@ namespace Shop.Models
         public virtual DbSet<Size> Sizes { get; set; }
         public virtual DbSet<Type> Types { get; set; }
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<UserDonation> UserDonations { get; set; }
+        public virtual DbSet<UserActivation> UserActivations { get; set; }
         public virtual DbSet<Voucher> Vouchers { get; set; }
         public virtual DbSet<Warehouse> Warehouses { get; set; }
         public virtual DbSet<WarehouseDetail> WarehouseDetails { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-QEP45U8\\CRRTTZ;Database=DataFashion;Trusted_Connection=True;");
-            }
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -360,37 +354,15 @@ namespace Shop.Models
                     .HasConstraintName("FK_user_role");
             });
 
-            modelBuilder.Entity<UserDonation>(entity =>
+            modelBuilder.Entity<UserActivation>(entity =>
             {
-                entity.HasNoKey();
-
-                entity.ToTable("user_donation");
-
-                entity.Property(e => e.CreateAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("createAt");
-
-                entity.Property(e => e.DonationId).HasColumnName("donation_id");
-
-                entity.Property(e => e.Money).HasColumnName("money");
-
-                entity.Property(e => e.Name)
-                    .HasMaxLength(50)
-                    .HasColumnName("name")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.Status)
-                    .HasMaxLength(10)
-                    .HasColumnName("status")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.UserId).HasColumnName("user_id");
-
-                entity.HasOne(d => d.Donation)
-                    .WithMany()
-                    .HasForeignKey(d => d.DonationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_user_donation_donation");
+                entity.ToTable("user_activation");
+                entity.HasKey(a => a.UserId);
+                entity.Property(a => a.UserId).HasColumnName("user_id");
+                entity.Property(a => a.Code).HasColumnName("code");
+                entity.Property(a => a.ExpiredAt).HasColumnName("expired_at");
+                entity.Property(a => a.Status).HasColumnName("status");
+                
             });
 
             modelBuilder.Entity<Voucher>(entity =>

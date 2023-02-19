@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Activate";
+    bool activated = (bool)ViewData["Activated"];
+    bool justRegistered = (bool)ViewData["JustRegistered"];
+}
+<div class="login-register-wrapper section-padding">
+    @if (justRegistered)
+    {
+        <div class="container">
+            <h2 class="checkout-title text-success">Thank you for your registration.</h2>
+            <p>You will shortly receive an activation email from the service. Click the link in the email to activate your account.</p>
+            <p>If you don't receive this email, click the Resend button.</p>
+            <form asp-action="ResendActivation" asp-controller="Login" method="post">
+                <div class="single-input-item">
+                    <button type="submit" name="resend" value="resend" class="btn btn-sqr">Resend Email</button>
+                </div>
+            </form>
+        </div>
+    }
+    else if (activated)
+    {
+        <div class="container">
+            <h2 class="checkout-title text-success">Your account has been activated.</h2>
+        </div>
+    }
+    else
+    {
+        <div class="container">
+            <h2 class="checkout-title text-warning">Your account has not been activated yet.</h2>
+            <p>To activate your account, click the link in the activation email which already sent to your mailbox.</p>
+            <p>If you don't receive this email, click the Resend button.</p>
+            <form asp-action="ResendActivation" asp-controller="Login" method="post">
+                <div class="single-input-item">
+                    <button type="submit" name="resend" value="resend" class="btn btn-sqr">Resend Email</button>
+                </div>
+            </form>
+        </div>
+    }
+</div>
+
