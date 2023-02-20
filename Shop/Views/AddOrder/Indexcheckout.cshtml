@@ -12,8 +12,8 @@
                     <div class="breadcrumb-wrap">
                         <nav aria-label="breadcrumb">
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html"><i class="fa fa-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="shop.html">shop</a></li>
+                                <li class="breadcrumb-item"><a href="/Home"><i class="fa fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="/Products">shop</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">checkout</li>
                             </ul>
                         </nav>
@@ -26,7 +26,7 @@
     <!-- checkout main wrapper start -->
 
     <div class="checkout-page-wrapper section-padding">
-        <form asp-action="Checkout" asp-controller="AddOrder">
+        <form method="post" asp-controller="AddOrder">
             <div class="container">
                 <div class="row">
                     <!-- Checkout Billing Details -->
@@ -79,8 +79,6 @@
                             <div class="order-summary-content">
                                 <!-- Order Summary Table -->
                                 <div class="order-summary-table table-responsive text-center">
-
-
 
                                     <table class="table table-bordered">
                                         <thead>
@@ -147,7 +145,9 @@
                                                 <td><strong>@vouchercode</strong></td>
                                             </tr>
                                             <tr>
-                                                @{ var subtotal = total * sale / 100; }
+                                                @{
+                                                    var subtotal = total * sale / 100;
+                                                }
                                                 <td>Sub Total</td>
                                                 <td><strong>$@subtotal.ToString("#,##0.#")</strong></td>
                                             </tr>
@@ -165,8 +165,8 @@
                                 </div>
                                 <!-- Order Payment Method -->
                                 <div class="order-payment-method">
-                                    <button type="submit" class="btn btn-sqr">Place Order</button>
-                                    <a href="Payment" class="btn btn-sqr">Checkout by MOMO</a>
+                                    <button type="submit" formaction="PlaceCOD" class="btn btn-sqr">Place Order</button>
+                                    <button type="submit" formaction="PayViaZaloPay" class="btn btn-sqr"><img src="~/assets/img/logo-zalopay.svg" alt=""> Pay via ZaloPay</button>
                                 </div>
                             </div>
                         </div>
@@ -178,7 +178,7 @@
     <!-- checkout main wrapper end -->
 </main>
 <!-- offcanvas mini cart start -->
- <div class="offcanvas-minicart-wrapper">
+<div class="offcanvas-minicart-wrapper">
     <div class="minicart-inner">
         <div class="offcanvas-overlay"></div>
         <div class="minicart-inner-content">

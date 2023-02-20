@@ -20,7 +20,7 @@ namespace Admin.Controllers
         }
 
         // GET: Products
-       
+
         public async Task<IActionResult> Index()
         {
             var dataFashionContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Status == 1);
@@ -35,33 +35,30 @@ namespace Admin.Controllers
             if (user == null)
             {
                 ViewData["orderdeatail"] = null;
-             
+
             }
             else
             {
-              
+
                 try
                 {
                     var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                     checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                    checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
                     if (checkOrderID == 0)
                     {
                         ViewData["orderdeatail"] = null;
-                        
+
                     }
                     else
                     {
                         ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID); ;
-                       
-                    }
 
+                    }
                 }
-                catch (Exception e)
+                catch
                 {
                     ViewData["orderdeatail"] = null;
-                   
                 }
-
             }
             return View(await dataFashionContext.ToListAsync());
         }
@@ -74,7 +71,7 @@ namespace Admin.Controllers
                 return NotFound();
             }
 
-            var product =  _context.Products
+            var product = _context.Products
                 .Include(p => p.ProductBrandNavigation)
                 .Include(p => p.ProductSizeNavigation)
                 .Include(p => p.ProductTypeNavigation)
@@ -95,7 +92,7 @@ namespace Admin.Controllers
 
                 try
                 {
-                     int? checkOrderID = 0;
+                    int? checkOrderID = 0;
                     var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
                     checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
                     if (checkOrderID == 0)
@@ -110,7 +107,7 @@ namespace Admin.Controllers
                     }
 
                 }
-                catch (Exception e)
+                catch
                 {
                     ViewData["orderdeatail"] = null;
 
@@ -240,6 +237,6 @@ namespace Admin.Controllers
         {
             return _context.Products.Any(e => e.Id == id);
         }
-       
-    } 
+
+    }
 }

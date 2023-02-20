@@ -20,16 +20,16 @@ namespace Shop.Controllers
             _logger = logger;
             _context = context;
         }
-      
+
         public IActionResult Index()
         {
             var user = HttpContext.Session.GetString("user");
             int? checkOrderID = 0;
             ViewData["allorderdetail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
             if (user == null)
-            {   
+            {
                 ViewData["orderdeatail"] = null;
-              
+
                 return View();
             }
             else
@@ -38,28 +38,28 @@ namespace Shop.Controllers
                 try
                 {
                     var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                     checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
-                    if(checkOrderID == 0)
+                    checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                    if (checkOrderID == 0)
                     {
                         ViewData["orderdeatail"] = null;
                         return View();
                     }
                     else
                     {
-                        ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID); 
+                        ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
                         return View();
                     }
-                  
+
                 }
-                catch(Exception e)
+                catch
                 {
                     ViewData["orderdeatail"] = null;
                     return View();
                 }
-             
+
             }
-          
-          
+
+
         }
 
         public IActionResult Privacy()

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Shop.Models;
 using Shop.SendMail;
+using Shop.Utils;
 
 namespace Shop.Controllers
 {
@@ -62,6 +63,7 @@ namespace Shop.Controllers
         {
             if (ModelState.IsValid)
             {
+                user.Password = PasswordUtils.ComputeHash(user.Password, null);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -73,44 +75,39 @@ namespace Shop.Controllers
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit()
         {
-           
             var User = HttpContext.Session.GetString("user");
             int? checkOrderID = 0;
             if (User == null)
             {
                 ViewData["orderdeatail"] = null;
-
             }
             else
             {
                 try
                 {
                     var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                     checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(User)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                    checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(User)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
                     if (checkOrderID == 0)
                     {
                         ViewData["orderdeatail"] = null;
-
                     }
                     else
                     {
-                        ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID); ;
-
+                        ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
                     }
-
                 }
-                catch (Exception e)
+                catch
                 {
                     ViewData["orderdeatail"] = null;
-
                 }
-
             }
-            if (User == null) 
+
+            if (User == null)
             {
                 return Redirect("/Login");
             }
-            int id = Int32.Parse(User);
+
+            int? id = Int32.Parse(User);
             if (id == null)
             {
                 return Redirect("/Login");
@@ -121,7 +118,8 @@ namespace Shop.Controllers
             {
                 return NotFound();
             }
-            ViewData["ViewOrders"] = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.UserId.Equals(Int32.Parse(User)) && s.Status >= 2 && s.Status < 5);
+            ViewData["ViewOrders"] = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
+                .Where(s => s.UserId.Equals(Int32.Parse(User)) && s.Status >= 2 && s.Status < 5);
             ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", user.RoleId);
             return View(user);
         }
@@ -141,10 +139,11 @@ namespace Shop.Controllers
             if (ModelState.IsValid)
             {
                 try
-                { 
+                {
                     var User = HttpContext.Session.GetString("user");
                     user.Id = Int32.Parse(User);
                     user.Status = 1;
+                    user.Password = PasswordUtils.ComputeHash(user.Password, null);
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -221,36 +220,36 @@ namespace Shop.Controllers
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Edit));
             }
-            
-           
         }
+
         public IActionResult ContactUs()
         {
-          
+
             return View();
         }
-        public IActionResult IndexForgotPassWord() {
+
+        public IActionResult IndexForgotPassWord()
+        {
             return View();
-            }
+        }
+
         [HttpPost]
         public IActionResult Forgotpassword()
         {
-            String email = HttpContext.Request.Form["Email"];
-            String btnLogin = HttpContext.Request.Form["login"];
-            if(btnLogin != null)
+            string email = HttpContext.Request.Form["Email"];
+            string btnLogin = HttpContext.Request.Form["login"];
+            if (btnLogin != null)
             {
                 var checkUser = _context.Users.Include(u => u.Role).Where(x => x.Email.Equals(email));
-                if(checkUser.ToList().Count > 0)
+                if (checkUser.ToList().Count > 0)
                 {
-                    checkUser.FirstOrDefault().Password = GeneratePassword(8);
+                    string newPassword = GeneratePassword(8);
+                    checkUser.FirstOrDefault().Password = PasswordUtils.ComputeHash(newPassword, null);
                     _context.Update(checkUser.FirstOrDefault());
                     _context.SaveChanges();
-                    MailUtils.SendMailGoogleSmtp("nganb1706840@student.ctu.edu.vn", email, "Password Mới của bạn là ", "Password:: " + checkUser.FirstOrDefault().Password + "  + Vui Lòng không chia sẽ mật khẩu cho bất kì ai",
-                                      "nganb1706840@student.ctu.edu.vn", "Legiabao08102008").Wait();
-                
+                    MailUtils.SendMailGoogleSmtp(email, "Password Mới của bạn là ", "Password:: " + newPassword + "  + Vui Lòng không chia sẽ mật khẩu cho bất kì ai").Wait();
                 }
             }
-          
             return Redirect("/Login");
         }
         public static string GeneratePassword(int passLength)

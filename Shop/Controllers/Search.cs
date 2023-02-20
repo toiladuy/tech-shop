@@ -28,11 +28,9 @@ namespace Shop.Controllers
             if (user == null)
             {
                 ViewData["orderdeatail"] = null;
-
             }
             else
             {
-
                 try
                 {
                     var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
@@ -44,21 +42,17 @@ namespace Shop.Controllers
                     }
                     else
                     {
-                        ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID); ;
-
+                        ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
                     }
-
                 }
-                catch (Exception e)
+                catch
                 {
                     ViewData["orderdeatail"] = null;
-
                 }
-
             }
+
             if (id == null)
             {
-               
                 String search = "";
                 try
                 {
@@ -95,8 +89,7 @@ namespace Shop.Controllers
                         return View(await dataFashionContext.ToListAsync());
                     }
                 }
-
-                catch (Exception e)
+                catch
                 {
 
                 }

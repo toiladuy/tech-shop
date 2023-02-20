@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shop.Models;
+using Shop.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Shop.Controllers
@@ -14,14 +18,17 @@ namespace Shop.Controllers
     public class AddOrderController : Controller
     {
         private readonly DataFashionContext _context;
+
         public AddOrderController(DataFashionContext context)
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
             return View();
         }
+
         public IActionResult AddtoCart(int? id)
         {
             var user = HttpContext.Session.GetString("user");
@@ -103,7 +110,7 @@ namespace Shop.Controllers
                         double price = _context.Products.Where(x => x.Id.Equals(id)).FirstOrDefault().OutPrice;
                         Order order = new Order();
                         order.CreateAt = DateTime.Now;
-                        order.OrderId = GenerateOrderID(5);
+                        order.OrderId = GenerateOrderID(6);
                         order.TotalPrice = price;
                         order.Status = 1;
                         order.UserId = Int32.Parse(user);
@@ -126,70 +133,206 @@ namespace Shop.Controllers
 
             }
         }
+
         public IActionResult Indexcheckout()
         {
-
-            var user = HttpContext.Session.GetString("user");
-            int? checkOrderID = 0;
-            if (user != null)
-            {
-                ViewData["User"] = _context.Users.Include(u => u.Role).Where(x => x.Id.Equals(Int32.Parse(user)));
-                ViewData["Product"] = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation);
-                ViewData["Voucher"] = _context.Vouchers;
-                var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
-                if (checkOrderID == 0)
-                {
-                    var dataFashionContext2 = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
-                    return View(dataFashionContext2.ToList());
-                }
-                var dataFashionContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
-                return View(dataFashionContext.ToList());
-            }
-            else
+            var userId = HttpContext.Session.GetString("user");
+            if (userId == null)
             {
                 return Redirect("/Login");
             }
-        }
-        [HttpPost]
-        public IActionResult Checkout()
-        {
-            String note = "";
-            note = HttpContext.Request.Form["ordernote"];
-            var user = HttpContext.Session.GetString("user");
-            var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
-            checkOrderID.Status = 2;
-            checkOrderID.Note = note;
-            _context.Orders.Update(checkOrderID);
-            _context.SaveChanges();
-            var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID.Id).ToArray();
-            foreach (OrderDetail orderDetail in ordetail)
+            var uid = int.Parse(userId);
+            var user = _context.Users.FirstOrDefault(u => u.Id.Equals(uid));
+            if (user == null || user.Status == 0)
             {
-                var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(orderDetail.ProductId));
+                TempData["AlertType"] = "alert-warning";
+                TempData["AlertMessage"] = "Your account has not been activated yet.";
+                return Redirect("/Login/CheckActivation");
+            }
+
+            var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+            var checkOrder = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(userId)) && s.Status.Equals(1)).FirstOrDefault();
+            if (checkOrder == null)
+            {
+                TempData["AlertType"] = "alert-warning";
+                TempData["AlertMessage"] = "Cart is empty.";
+                return Redirect("/Home");
+            }
+
+            ViewData["Order"] = checkOrder;
+            ViewData["User"] = _context.Users.Include(u => u.Role).Where(x => x.Id.Equals(Int32.Parse(userId)));
+            ViewData["Product"] = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation);
+            ViewData["Voucher"] = _context.Vouchers;
+            var detailsCtx = _context.OrderDetails
+                .Include(o => o.Order)
+                .Include(o => o.Product)
+                .Where(s => s.OrderId == checkOrder.Id);
+            return View(detailsCtx.ToList());
+        }
+
+        [HttpPost]
+        public ActionResult PlaceCOD()
+        {
+            var user = HttpContext.Session.GetString("user");
+            var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+            checkOrder.Note = HttpContext.Request.Form["ordernote"];
+            _context.Orders.Update(checkOrder);
+            _context.SaveChanges();
+            onCheckoutDone();
+            return Redirect("PaymentComplete");
+        }
+
+        private void onCheckoutDone()
+        {
+            var user = HttpContext.Session.GetString("user");
+            var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+            checkOrder.Status = 2;
+            _context.Orders.Update(checkOrder);
+            _context.SaveChanges();
+            var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
+            foreach (OrderDetail orderDetail in orderDetails)
+            {
+                var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation)
+                    .Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(orderDetail.ProductId));
                 product.FirstOrDefault().ProductQuantity = Convert.ToInt32(product.FirstOrDefault().ProductQuantity - orderDetail.Quantity);
                 _context.Products.Update(product.FirstOrDefault());
                 _context.SaveChanges();
             }
             try
             {
-                var quanlity_voucher = _context.Vouchers.Where(x => x.Id.Equals(checkOrderID.VoucherId)).FirstOrDefault();
-                quanlity_voucher.Quantity = quanlity_voucher.Quantity - 1;
-                _context.Vouchers.Update(quanlity_voucher);
-                _context.SaveChanges();
+                if (checkOrder.VoucherId != null)
+                {
+                    var voucher = _context.Vouchers.Where(x => x.Id.Equals(checkOrder.VoucherId)).FirstOrDefault();
+                    if (voucher != null)
+                    {
+                        voucher.Quantity--;
+                        _context.Vouchers.Update(voucher);
+                        _context.SaveChanges();
+                    }
+                }
             }
             catch (Exception)
             {
-
                 throw;
             }
-
-            TempData["AlertType"] = "alert-success";
-            TempData["AlertMessage"] = "Checkout successful";
-            return Redirect("/Home");
         }
 
-        public ActionResult Payment()
+        [HttpPost]
+        public async Task<ActionResult> PayViaZaloPay()
+        {
+            var user = HttpContext.Session.GetString("user");
+            if (user == null)
+            {
+                return Redirect("/Login");
+            }
+            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
+                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+            var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
+            var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
+            string redirectUrl = "https://localhost:44398/AddOrder/PaymentComplete";
+            string callbackUrl = "https://localhost:44398/AddOrder/PaymentCallback";
+            var postbackData = new Dictionary<string, string> {
+                { "orderId", checkOrder.Id.ToString() },
+                { "orderNumber", checkOrder.OrderId }
+            };
+            var orderPaymentUrl = await ZaloPayService.CreateOrder(checkOrder.OrderId, finalPrice, redirectUrl, callbackUrl, postbackData);
+            return Redirect(orderPaymentUrl);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PaymentComplete([FromQuery(Name = "apptransid")] string appTransId)
+        {
+            var user = HttpContext.Session.GetString("user");
+            if (user == null) return Redirect("/Login");
+
+            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.UserId.Equals(int.Parse(user))).FirstOrDefault();
+            if (checkOrder == null)
+            {
+                TempData["AlertType"] = "alert-warning";
+                TempData["AlertMessage"] = "Cart is empty";
+                return Redirect("/Home");
+            }
+            ViewData["Order"] = checkOrder;
+            ViewData["OrderNumber"] = checkOrder.OrderId;
+            ViewData["User"] = _context.Users.Include(u => u.Role).First(x => x.Id.Equals(Int32.Parse(user)));
+            ViewData["Product"] = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation);
+            ViewData["Voucher"] = _context.Vouchers;
+            var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToList();
+
+            if (!string.IsNullOrEmpty(appTransId))
+            {
+                ViewData["IsCOD"] = false;
+                var paymentSuccess = await ZaloPayService.IsOrderSuccess(appTransId);
+                if (paymentSuccess)
+                {
+                    ViewData["IsPaymentSuccess"] = true;
+                    onCheckoutDone();
+                    return View(orderDetails);
+                }
+                else
+                {
+                    ViewData["IsPaymentSuccess"] = false;
+                    return View();
+                }
+            }
+            else if (checkOrder.Status != 1)
+            {
+                // COD
+                ViewData["IsPaymentSuccess"] = true;
+                ViewData["IsCOD"] = true;
+                return View(orderDetails);
+            }
+            else
+            {
+                return Redirect("/AddOrder/Indexcheckout");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult PaymentCallback([FromBody] Dictionary<string, object> cbdata)
+        {
+            Debug.WriteLine("Callback = {0}", cbdata);
+
+            //var result = new Dictionary<string, object>();
+
+            //try
+            //{
+            //    var dataStr = Convert.ToString(cbdata["data"]);
+            //    var reqMac = Convert.ToString(cbdata["mac"]);
+            //    string key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
+            //    var mac = HmacUtils.Compute(key2, dataStr);
+
+            //    Console.WriteLine("mac = {0}", mac);
+
+            //    // kiểm tra callback hợp lệ (đến từ ZaloPay server)
+            //    if (!reqMac.Equals(mac))
+            //    {
+            //        // callback không hợp lệ
+            //        result["return_code"] = -1;
+            //        result["return_message"] = "mac not equal";
+            //    }
+            //    else
+            //    {
+            //        // thanh toán thành công
+            //        // merchant cập nhật trạng thái cho đơn hàng
+            //        var dataJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(dataStr);
+            //        Console.WriteLine("update order's status = success where app_trans_id = {0}", dataJson["app_trans_id"]);
+
+            //        result["return_code"] = 1;
+            //        result["return_message"] = "success";
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    result["return_code"] = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
+            //    result["return_message"] = ex.Message;
+            //}
+
+            // thông báo kết quả cho ZaloPay server
+            return Ok(cbdata);
+        }
+
+        public ActionResult PayViaMomo()
         {
             var user = HttpContext.Session.GetString("user");
             var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
@@ -287,7 +430,7 @@ namespace Shop.Controllers
             }
             else
             {
-                Checkout();
+                PlaceCOD();
             }
             return RedirectToAction("Index");
 
@@ -507,7 +650,7 @@ namespace Shop.Controllers
         }
         public static string GenerateOrderID(int Length)
         {
-            var chars = "abcdefghijklmnopqrstuvwxyz@#$&ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var random = new Random();
             var result = new string(
                 Enumerable.Repeat(chars, Length)

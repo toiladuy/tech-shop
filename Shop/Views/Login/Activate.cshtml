@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Activate";
+}
+<div class="login-register-wrapper section-padding">
+    <div class="container">
+        <h2 class="checkout-title">Thank you for your registration.</h2>
+        <p>You will shortly receive an activation email from the service. Click the link in the email to activate your account.</p>
+        <p>If you don't receive this email, click the Resend button.</p>
+        <form asp-action="ResendActivation" asp-controller="Login" method="post">
+            <div class="single-input-item">
+                <button type="submit" name="resend" value="resend" class="btn btn-sqr">Resend Email</button>
+            </div>
+        </form>
+    </div>
+</div>
+
