@@ -55,23 +55,23 @@
                                             <td class="pro-price"><span><input type="text" value="@item.Price" readonly id="price" /></span></td>
                                             <td class="pro-quantity">
                                                 <div class="">
-                                                  
-                                                  
-                                                        <a asp-controller="AddOrder" asp-action="SubQuantity" asp-route-id="@item.Id"><h3>-</h3></a>
-                                                        <input type="text" style="text-align:center" value="@item.Quantity" width="60" height="80">
-                                                        <a asp-controller="AddOrder" asp-action="AddQuantity" asp-route-id="@item.Id"><h4>+</h4></a>
-                                                   
-                                                    </div>
-                                                  
+
+
+                                                    <a asp-controller="AddOrder" asp-action="SubQuantity" asp-route-id="@item.Id"><h3>-</h3></a>
+                                                    <input type="text" style="text-align:center" value="@item.Quantity" width="60" height="80">
+                                                    <a asp-controller="AddOrder" asp-action="AddQuantity" asp-route-id="@item.Id"><h4>+</h4></a>
+
+                                                </div>
+
                                             </td>
                                             @{
                                                 var pricetotla = item.Quantity * item.Price;
                                             }
                                             <td class="pro-subtotal"><span>@pricetotla?.ToString("#,##0.#")</span></td>
-                                            <td class="pro-remove"><a data-toggle="modal" data-target="#logoutModal"><i class="fa fa-trash-o"></i></a></td>
+                                            <td class="pro-remove"><a data-toggle="modal" data-target="#logoutModal-@item.Id"><i class="fa fa-trash-o"></i></a></td>
                                         </tr>
-                                        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                             aria-hidden="true">
+                                        <div class="modal fade" id="logoutModal-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                         aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -112,43 +112,42 @@
                                     double total = 0;
                                     double sale = 0;
                                     String vouchercode = "";
-                                }
-
-                                @foreach (var item in Model)
-                                {
-                                    total += Convert.ToDouble(item.Quantity * item.Price);
-                                    IEnumerable<Voucher> voucher = ViewData["Voucher"] as IEnumerable<Voucher>;
-                                    if (item.Order.Voucher != null)
+                                    foreach (var item in Model)
                                     {
-                                        foreach (Voucher voucher1 in voucher)
+                                        total += Convert.ToDouble(item.Quantity * item.Price);
+                                        IEnumerable<Voucher> voucher = ViewData["Voucher"] as IEnumerable<Voucher>;
+                                        if (item.Order.Voucher != null)
                                         {
-                                            if (item.Order.VoucherId.Equals(voucher1.Id))
+                                            foreach (Voucher voucher1 in voucher)
                                             {
-                                                sale = Convert.ToDouble(voucher1.VoucherDiscount);
-                                                vouchercode = voucher1.VoucherCode.ToString();
+                                                if (item.Order.VoucherId.Equals(voucher1.Id))
+                                                {
+                                                    sale = Convert.ToDouble(voucher1.VoucherDiscount);
+                                                    vouchercode = voucher1.VoucherCode.ToString();
+                                                }
                                             }
                                         }
                                     }
+                                    double discountAmount = total * sale / 100;
                                 }
                                 <div class="table-responsive">
                                     <table class="table">
                                         <tr>
-                                            <td>Cart Total</td>
+                                            <td>Sub Total</td>
                                             <td>$@total.ToString("#,##0.#")</td>
                                         </tr>
-                                        <tr>
-                                            @{ var subtotal = total * sale / 100; }
-                                            <td>Sub Total</td>
-                                            <td>$@subtotal.ToString("#,##0.#")</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Voucher Code</td>
-                                            <td>@vouchercode</td>
-                                        </tr>
+                                        @if (!string.IsNullOrEmpty(vouchercode))
+                                        {
+                                            <tr>
+                                                <td>Voucher (@vouchercode)</td>
+                                                <td class="text-danger">- $@discountAmount.ToString("#,##0.#")</td>
+                                            </tr>
+
+                                        }
                                         <tr class="total">
                                             <td>Total</td>
                                             @{
-                                                double finaltotal = total - subtotal;
+                                                double finaltotal = total - discountAmount;
                                             }
                                             <td class="total-amount">$@finaltotal.ToString("#,##0.#")</td>
                                         </tr>
@@ -171,5 +170,7 @@
 </div>
 <!-- Scroll to Top End -->
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

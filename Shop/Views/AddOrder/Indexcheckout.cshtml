@@ -92,8 +92,6 @@
                                             {
                                                 String productname = "";
                                                 IEnumerable<Product> product = ViewData["Product"] as IEnumerable<Product>;
-
-
                                                 @foreach (Product pro in product)
                                                 {
                                                     if (ord.ProductId.Equals(pro.Id))
@@ -117,46 +115,45 @@
                                                 String vouchercode = "";
                                                 double total_temp = 0;
                                                 int? voucherid = 0;
-                                            }
-
-                                            @foreach (var item in Model)
-
-                                            {
-                                                total_temp = item.Order.TotalPrice;
-                                                voucherid = item.Order.VoucherId;
-                                                total += Convert.ToDouble(item.Quantity * item.Price);
-                                                IEnumerable<Voucher> voucher = ViewData["Voucher"] as IEnumerable<Voucher>;
-                                                if (item.Order.VoucherId != null)
+                                                foreach (var item in Model)
                                                 {
-                                                    foreach (Voucher voucher1 in voucher)
+                                                    total_temp = item.Order.TotalPrice;
+                                                    voucherid = item.Order.VoucherId;
+                                                    total += Convert.ToDouble(item.Quantity * item.Price);
+                                                    IEnumerable<Voucher> voucher = ViewData["Voucher"] as IEnumerable<Voucher>;
+                                                    if (item.Order.VoucherId != null)
                                                     {
-                                                        if (item.Order.VoucherId.Equals(voucher1.Id))
+                                                        foreach (Voucher voucher1 in voucher)
                                                         {
-                                                            sale = Convert.ToDouble(voucher1.VoucherDiscount);
-                                                            vouchercode = voucher1.VoucherCode.ToString();
+                                                            if (item.Order.VoucherId.Equals(voucher1.Id))
+                                                            {
+                                                                sale = Convert.ToDouble(voucher1.VoucherDiscount);
+                                                                vouchercode = voucher1.VoucherCode.ToString();
+                                                            }
                                                         }
                                                     }
-                                                }
 
+                                                }
+                                                double discountAmount = total * sale / 100;
                                             }
                                             <tr>
-
-                                                <td>Voucher code</td>
-                                                <td><strong>@vouchercode</strong></td>
-                                            </tr>
-                                            <tr>
-                                                @{
-                                                    var subtotal = total * sale / 100;
-                                                }
                                                 <td>Sub Total</td>
-                                                <td><strong>$@subtotal.ToString("#,##0.#")</strong></td>
+                                                <td><strong>$@total.ToString("#,##0.#")</strong></td>
                                             </tr>
+                                            @if (!string.IsNullOrEmpty(vouchercode))
+                                            {
+
+                                                <tr>
+                                                    <td>Voucher (@vouchercode)</td>
+                                                    <td class="text-danger">- $@discountAmount.ToString("#,##0.#")</td>
+                                                </tr>
+                                            }
                                             <tr>
                                                 @{
-                                                    double finaltotal = total - subtotal;
+                                                    double finaltotal = total - discountAmount;
                                                 }
-                                                <td>Total Amount</td>
-                                                <td><strong>$@finaltotal.ToString("#,##0.#")</strong></td>
+                                                <td>Total</td>
+                                                <td class="total-amount"><strong>$@finaltotal.ToString("#,##0.#")</strong></td>
                                             </tr>
                                         </tfoot>
                                     </table>
