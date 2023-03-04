@@ -15,8 +15,8 @@ namespace Shop.SendMail
         /// </summary>
         public static async Task<String> SendMailGoogleSmtp(string _to, string _subject, string _body)
         {
-            string senderEmail = "toiladuy10@gmail.com";
-            string senderPassword = "euwxumvktngnhqst";
+            string senderEmail = "phihung3399@gmail.com";
+            string senderPassword = "zovjvewhxfocavmp";
             MailMessage message = new MailMessage(
                 from: senderEmail,
                 to: _to,

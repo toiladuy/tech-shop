@@ -245,7 +245,8 @@ namespace Shop.Controllers
             var user = HttpContext.Session.GetString("user");
             if (user == null) return Redirect("/Login");
 
-            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.UserId.Equals(int.Parse(user))).FirstOrDefault();
+            var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
+                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
             if (checkOrder == null)
             {
                 TempData["AlertType"] = "alert-warning";
