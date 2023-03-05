@@ -8,7 +8,7 @@ namespace Shop.Utils
         {
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
-            return doc.ParsedText;
+            return doc.DocumentNode.InnerText;
         }
     }
 }

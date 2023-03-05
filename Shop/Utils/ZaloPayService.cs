@@ -11,7 +11,7 @@ namespace Shop.Utils
         private static string appId = "2554";
         private static string key1 = "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn";
 
-        public static async Task<string> CreateOrder(string orderId, double amount, string redirectUrl, string callbackUrl, Dictionary<string, string> postbackData)
+        public static async Task<Tuple<string, string>> CreateOrder(string orderId, double amount, string redirectUrl, string callbackUrl, Dictionary<string, string> postbackData)
         {
             string endpoint = "https://sb-openapi.zalopay.vn/v2/create";
             long currentTs = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -33,14 +33,14 @@ namespace Shop.Utils
                 { "app_time", currentTs.ToString() },
                 { "amount", amount.ToString() },
                 { "item", item },
-                { "description", "PH-Tech - Thanh toán đơn hàng #" + appTransId },
+                { "description", "PH-Tech - Thanh toán đơn hàng #" + orderId },
                 { "embed_data", JsonConvert.SerializeObject(embedData) },
                 { "bank_code", "zalopayapp" },
                 { "mac", hmac },
                 { "callback_url", callbackUrl }
             };
             var result = await HttpUtils.PostFormAsync<JObject>(endpoint, param);
-            return result.GetValue("order_url").ToString();
+            return Tuple.Create(appTransId, result.GetValue("order_url").ToString());
         }
 
         public static async Task<bool> IsOrderSuccess(string appTransId)

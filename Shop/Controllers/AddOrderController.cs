@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shop.Models;
 using Shop.Utils;
@@ -9,7 +8,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,105 +30,118 @@ namespace Shop.Controllers
         public IActionResult AddtoCart(int? id)
         {
             var user = HttpContext.Session.GetString("user");
-            var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(id));
-
             if (user == null)
             {
                 return Redirect("/Login");
             }
-            else
+
+            if (id == null)
             {
-                if (product.FirstOrDefault().ProductQuantity <= 0)
+                return Redirect("/Home");
+            }
+
+            var product = _context.Products
+                .Include(p => p.ProductBrandNavigation)
+                .Include(p => p.ProductSizeNavigation)
+                .Include(p => p.ProductTypeNavigation)
+                .Where(x => x.Id.Equals(id));
+
+            if (product.FirstOrDefault().ProductQuantity <= 0)
+            {
+                TempData["AlertType"] = "alert-success";
+                TempData["AlertMessage"] = "Product is sold out";
+                return Redirect("/Products");
+            }
+
+            var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+            var openOrder = orderCtx.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
+            if (openOrder != null)
+            {
+                var orderDetailsCtx = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
+                var checkProductExist = orderDetailsCtx.Where(s => s.ProductId.Equals(id) && s.OrderId.Equals(openOrder.Id));
+                var orderder = orderDetailsCtx.Where(x => x.OrderId.Equals(openOrder.Id));
+                if (checkProductExist.Count() > 0)
                 {
-                    TempData["AlertType"] = "alert-success";
-                    TempData["AlertMessage"] = "Product is sold out";
-                    return Redirect("/Products");
+                    if (product.FirstOrDefault().ProductQuantity - (checkProductExist.FirstOrDefault().Quantity + 1) < 0)
+                    {
+                        TempData["AlertType"] = "alert-success";
+                        TempData["AlertMessage"] = "Product is sold out";
+                        return Redirect("/Products");
+                    }
+
+                    var orderDetalis = checkProductExist.FirstOrDefault();
+                    orderDetalis.Quantity++;
+                    _context.OrderDetails.Update(orderDetalis);
+                    _context.SaveChanges();
+
+                    double totalPrice = 0;
+                    foreach (OrderDetail ordetail in orderder)
+                    {
+                        totalPrice += Convert.ToDouble(ordetail.Quantity * ordetail.Price);
+                        Debug.WriteLine(totalPrice + "gia");
+                    }
+
+                    openOrder.TotalPrice = totalPrice;
+                    _context.Orders.Update(openOrder);
+                    _context.SaveChanges();
                 }
                 else
                 {
-                    var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
-                    if (checkOrderExist.Count() > 0)
+                    double price = _context.Products.Where(x => x.Id.Equals(id)).FirstOrDefault().OutPrice;
+                    OrderDetail orderDetail = new()
                     {
-                        var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
-                        var checkProductExist = data.Where(s => s.ProductId.Equals(id) && s.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
-                        var orderder = data.Where(x => x.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
-                        if (checkProductExist.Count() > 0)
-                        {
-                            if (product.FirstOrDefault().ProductQuantity - (checkProductExist.FirstOrDefault().Quantity + 1) < 0)
-                            {
-                                TempData["AlertType"] = "alert-success";
-                                TempData["AlertMessage"] = "Product is sold out";
-                                return Redirect("/Products");
-                            }
-                            var orderDetalis = checkProductExist.FirstOrDefault();
-                            orderDetalis.Quantity = orderDetalis.Quantity + 1;
-                            _context.OrderDetails.Update(orderDetalis);
-                            _context.SaveChanges();
-                            double totlaprice = 0;
-                            foreach (OrderDetail ordetail in orderder)
-                            {
-                                totlaprice += Convert.ToDouble(ordetail.Quantity * ordetail.Price);
-                                Debug.WriteLine(totlaprice + "gia");
-                            }
+                        OrderId = openOrder.Id,
+                        ProductId = id,
+                        Price = price,
+                        Quantity = 1
+                    };
+                    _context.OrderDetails.Add(orderDetail);
+                    _context.SaveChanges();
 
-                            checkOrderExist.FirstOrDefault().TotalPrice = totlaprice;
-                            _context.Orders.Update(checkOrderExist.FirstOrDefault());
-                            _context.SaveChanges();
-
-                        }
-                        else
-                        {
-                            double price = _context.Products.Where(x => x.Id.Equals(id)).FirstOrDefault().OutPrice;
-                            OrderDetail orderDetail = new OrderDetail();
-                            orderDetail.OrderId = checkOrderExist.FirstOrDefault().Id;
-                            orderDetail.ProductId = id;
-                            orderDetail.Price = price;
-                            orderDetail.Quantity = 1;
-                            _context.OrderDetails.Add(orderDetail);
-                            _context.SaveChanges();
-                            double totlaprice = 0;
-                            foreach (OrderDetail ordetail in orderder)
-                            {
-                                totlaprice += Convert.ToDouble(ordetail.Quantity * ordetail.Price);
-                                Debug.WriteLine(totlaprice);
-                            }
-                            checkOrderExist.FirstOrDefault().TotalPrice = totlaprice;
-                            _context.Orders.Update(checkOrderExist.FirstOrDefault());
-                            _context.SaveChanges();
-
-
-                        }
-                        TempData["AlertType"] = "alert-success";
-                        TempData["AlertMessage"] = "Add To Cart successful";
-                        return Redirect("/Products");
-                    }
-                    else
+                    double totalPrice = 0;
+                    foreach (OrderDetail ordetail in orderder)
                     {
-                        double price = _context.Products.Where(x => x.Id.Equals(id)).FirstOrDefault().OutPrice;
-                        Order order = new Order();
-                        order.CreateAt = DateTime.Now;
-                        order.OrderId = GenerateOrderID(6);
-                        order.TotalPrice = price;
-                        order.Status = 1;
-                        order.UserId = Int32.Parse(user);
-                        _context.Orders.Add(order);
-                        _context.SaveChanges();
-                        OrderDetail orderDetail = new OrderDetail();
-                        orderDetail.OrderId = order.Id;
-                        orderDetail.ProductId = id;
-                        orderDetail.Price = price;
-                        orderDetail.Quantity = 1;
-                        _context.OrderDetails.Add(orderDetail);
-                        _context.SaveChanges();
-
-                        TempData["AlertType"] = "alert-success";
-                        TempData["AlertMessage"] = "Add To Cart successful";
-                        return Redirect("/Products");
+                        totalPrice += Convert.ToDouble(ordetail.Quantity * ordetail.Price);
+                        Debug.WriteLine(totalPrice);
                     }
+                    openOrder.TotalPrice = totalPrice;
+                    _context.Orders.Update(openOrder);
+                    _context.SaveChanges();
                 }
+                TempData["AlertType"] = "alert-success";
+                TempData["AlertMessage"] = "Add To Cart successful";
+                return Redirect("/Products");
+            }
+            else
+            {
+                double price = _context.Products.Where(x => x.Id.Equals(id)).FirstOrDefault().OutPrice;
 
+                Order order = new()
+                {
+                    CreateAt = DateTime.Now,
+                    OrderId = GenerateOrderID(6),
+                    TotalPrice = price,
+                    Status = OrderStatus.New,
+                    UserId = int.Parse(user),
+                    PaymentMethod = Payment.Method.COD.ToString(),
+                    PaymentStatus = (int?)Payment.Status.UNPAID
+                };
+                _context.Orders.Add(order);
+                _context.SaveChanges();
 
+                OrderDetail orderDetail = new()
+                {
+                    OrderId = order.Id,
+                    ProductId = id,
+                    Price = price,
+                    Quantity = 1
+                };
+                _context.OrderDetails.Add(orderDetail);
+                _context.SaveChanges();
+
+                TempData["AlertType"] = "alert-success";
+                TempData["AlertMessage"] = "Add To Cart successful";
+                return Redirect("/Products");
             }
         }
 
@@ -151,7 +162,7 @@ namespace Shop.Controllers
             }
 
             var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrder = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(userId)) && s.Status.Equals(1)).FirstOrDefault();
+            var checkOrder = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(userId)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
             if (checkOrder == null)
             {
                 TempData["AlertType"] = "alert-warning";
@@ -174,21 +185,28 @@ namespace Shop.Controllers
         public ActionResult PlaceCOD()
         {
             var user = HttpContext.Session.GetString("user");
-            var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+            if (user == null)
+            {
+                return Redirect("/Login");
+            }
+            var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
             checkOrder.Note = HttpContext.Request.Form["ordernote"];
+            checkOrder.PaymentMethod = Payment.Method.COD.ToString();
             _context.Orders.Update(checkOrder);
             _context.SaveChanges();
-            onCheckoutDone();
+            AfterCheckoutDone();
             return Redirect("PaymentComplete");
         }
 
-        private void onCheckoutDone()
+        private void AfterCheckoutDone()
         {
             var user = HttpContext.Session.GetString("user");
-            var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
-            checkOrder.Status = 2;
+
+            var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
+            checkOrder.Status = OrderStatus.WaitingForConfirm;
             _context.Orders.Update(checkOrder);
             _context.SaveChanges();
+
             var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
             foreach (OrderDetail orderDetail in orderDetails)
             {
@@ -198,6 +216,7 @@ namespace Shop.Controllers
                 _context.Products.Update(product.FirstOrDefault());
                 _context.SaveChanges();
             }
+
             try
             {
                 if (checkOrder.VoucherId != null)
@@ -226,7 +245,7 @@ namespace Shop.Controllers
                 return Redirect("/Login");
             }
             var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
-                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
             var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
             var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
             string redirectUrl = "https://localhost:44398/AddOrder/PaymentComplete";
@@ -235,8 +254,14 @@ namespace Shop.Controllers
                 { "orderId", checkOrder.Id.ToString() },
                 { "orderNumber", checkOrder.OrderId }
             };
-            var orderPaymentUrl = await ZaloPayService.CreateOrder(checkOrder.OrderId, finalPrice, redirectUrl, callbackUrl, postbackData);
-            return Redirect(orderPaymentUrl);
+            var resp = await ZaloPayService.CreateOrder(checkOrder.OrderId, finalPrice, redirectUrl, callbackUrl, postbackData);
+
+            checkOrder.PaymentMethod = Payment.Method.ZALOPAY.ToString();
+            checkOrder.PaymentDetail = resp.Item1;
+            _context.Orders.Update(checkOrder);
+            _context.SaveChanges();
+
+            return Redirect(resp.Item2);
         }
 
         [HttpGet]
@@ -246,7 +271,7 @@ namespace Shop.Controllers
             if (user == null) return Redirect("/Login");
 
             var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
-                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+                .Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
             if (checkOrder == null)
             {
                 TempData["AlertType"] = "alert-warning";
@@ -258,6 +283,7 @@ namespace Shop.Controllers
             ViewData["User"] = _context.Users.Include(u => u.Role).First(x => x.Id.Equals(Int32.Parse(user)));
             ViewData["Product"] = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation);
             ViewData["Voucher"] = _context.Vouchers;
+
             var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToList();
 
             if (!string.IsNullOrEmpty(appTransId))
@@ -266,12 +292,20 @@ namespace Shop.Controllers
                 var paymentSuccess = await ZaloPayService.IsOrderSuccess(appTransId);
                 if (paymentSuccess)
                 {
+                    checkOrder.PaymentStatus = (int)Payment.Status.PAID;
+                    _context.Orders.Update(checkOrder);
+                    _context.SaveChanges();
+
                     ViewData["IsPaymentSuccess"] = true;
-                    onCheckoutDone();
+                    AfterCheckoutDone();
                     return View(orderDetails);
                 }
                 else
                 {
+                    checkOrder.PaymentStatus = (int)Payment.Status.FAILED;
+                    _context.Orders.Update(checkOrder);
+                    _context.SaveChanges();
+
                     ViewData["IsPaymentSuccess"] = false;
                     return View();
                 }
@@ -337,7 +371,7 @@ namespace Shop.Controllers
         {
             var user = HttpContext.Session.GetString("user");
             var checkOrder = _context.Orders.Include(o => o.User).Include(o => o.Voucher)
-                .Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault();
+                .Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
             var ordetail = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
             var finalPrice = CalculateTotalOrder(checkOrder, ordetail);
 
@@ -446,7 +480,7 @@ namespace Shop.Controllers
             var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(ProductID));
             var user = HttpContext.Session.GetString("user");
             var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(OrderStatus.New));
             var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
             var orderder = data.Where(x => x.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
             double totlaprice = 0;
@@ -472,7 +506,7 @@ namespace Shop.Controllers
             var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(ProductID));
             var user = HttpContext.Session.GetString("user");
             var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(OrderStatus.New));
             var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
             var orderder = data.Where(x => x.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
             double totlaprice = 0;
@@ -504,7 +538,7 @@ namespace Shop.Controllers
                 var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(ProductID));
                 var user = HttpContext.Session.GetString("user");
                 var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+                var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(OrderStatus.New));
                 var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
                 var orderder = data.Where(x => x.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
                 double totlaprice = 0;
@@ -538,7 +572,7 @@ namespace Shop.Controllers
             }
             percent = _context.Vouchers.Where(x => x.VoucherCode.Equals(voucher)).FirstOrDefault()?.VoucherDiscount;
             var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(OrderStatus.New));
             checkOrderExist.FirstOrDefault().TotalPrice = (checkOrderExist.FirstOrDefault().TotalPrice) - Convert.ToDouble(checkOrderExist.FirstOrDefault().TotalPrice * (percent / 100));
             checkOrderExist.FirstOrDefault().VoucherId = _context.Vouchers.Where(x => x.VoucherCode.EndsWith(voucher)).FirstOrDefault().Id;
             _context.Orders.Update(checkOrderExist.FirstOrDefault());

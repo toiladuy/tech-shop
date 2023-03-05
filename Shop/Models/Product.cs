@@ -1,5 +1,7 @@
 ﻿using Shop.Utils;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 #nullable disable
 
@@ -38,7 +40,10 @@ namespace Shop.Models
         {
             get
             {
-                return HtmlUtils.HtmlToText(ProductDescription);
+                string text = HtmlUtils.HtmlToText(ProductDescription);
+                string str = Regex.Replace(text, @"[\n\r]", "").Trim();
+                string[] words = str.Split(" ", System.StringSplitOptions.RemoveEmptyEntries);
+                return words.Length > 100 ? (string.Join(" ", words.Take(100)) + "...") : str;
             }
         }
     }

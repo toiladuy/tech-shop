@@ -27,5 +27,10 @@ namespace Shop.Models
         public virtual User User { get; set; }
         public virtual Voucher Voucher { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+
+        public bool IsOpen()
+        {
+            return Status.Equals(OrderStatus.New);
+        }
     }
 }
