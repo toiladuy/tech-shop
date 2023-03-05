@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Shop.Utils;
 using System.Collections.Generic;
 
 #nullable disable
@@ -33,5 +33,13 @@ namespace Shop.Models
         public virtual Type ProductTypeNavigation { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<WarehouseDetail> WarehouseDetails { get; set; }
+
+        public string ProductParsedDescription
+        {
+            get
+            {
+                return HtmlUtils.HtmlToText(ProductDescription);
+            }
+        }
     }
 }

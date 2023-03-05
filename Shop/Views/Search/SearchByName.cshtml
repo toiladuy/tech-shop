@@ -172,29 +172,28 @@
                                         </div>
                                     </div>
                                     <!-- product grid end -->
+
                                     <!-- product list item end -->
                                     <div class="product-list-item">
                                         <figure class="product-thumb">
                                             <a href="/Products/Details/@item.Id">
-
                                                 <img class="pri-img" src="https://localhost:44347/images/@arrListStr[0]" alt="product">
                                                 <img class="sec-img" src="https://localhost:44347/images/@arrListStr[1]" alt="product">
                                             </a>
-                                            <div class="product-badge">
+                                            @*<div class="product-badge">
                                                 <div class="product-label new">
                                                     <span>-30%</span>
                                                 </div>
-                                            </div>
+                                            </div>*@
                                         </figure>
                                         <div class="product-content-list">
-                                            <h5 class="product-name">  <a href="/Products/Details/@item.Id">@item.ProductName</a></h5>
+                                            <h5 class="product-name">
+                                                <a href="/Products/Details/@item.Id">@item.ProductName</a>
+                                            </h5>
                                             <div class="price-box">
-                                                <span class="price-regular">$@item.OutPrice</span>
-                                                <span class="price-old"><del>$70.00</del></span>
+                                                <span class="price-regular" style="font-size:1rem">$@item.OutPrice.ToString("#,##0.#")</span>
                                             </div>
-                                            <p>
-                                                @item.ProductDescription
-                                            </p>
+                                            <p>@item.ProductParsedDescription</p>
                                             <div class="button-group">
                                                 <a asp-controller="AddOrder" asp-action="AddtoWishlist" asp-route-id="@item.Id" data-toggle="tooltip" title="Add to Wishlist"><i class="pe-7s-like"></i></a>
                                                 <a asp-controller="AddOrder" asp-action="AddtoCart" asp-route-id="@item.Id" data-toggle="tooltip" title="Add to Cart"><i class="pe-7s-cart"></i></a>
