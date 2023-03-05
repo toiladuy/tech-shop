@@ -17,9 +17,9 @@ namespace Shop.Controllers
 {
     public class AddOrderController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
 
-        public AddOrderController(DataFashionContext context)
+        public AddOrderController(PhTechContext context)
         {
             _context = context;
         }

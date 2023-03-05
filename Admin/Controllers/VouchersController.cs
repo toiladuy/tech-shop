@@ -11,9 +11,9 @@ namespace Admin.Controllers
 {
     public class VouchersController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
 
-        public VouchersController(DataFashionContext context)
+        public VouchersController(PhTechContext context)
         {
             _context = context;
         }

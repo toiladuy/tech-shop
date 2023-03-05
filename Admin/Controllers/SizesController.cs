@@ -13,9 +13,9 @@ namespace Admin.Controllers
 {
     public class SizesController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
         CheckPermission check = new CheckPermission();
-        public SizesController(DataFashionContext context)
+        public SizesController(PhTechContext context)
         {
             _context = context;
         }

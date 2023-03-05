@@ -1,18 +1,16 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
 namespace Admin.Models
 {
-    public partial class DataFashionContext : DbContext
+    public partial class PhTechContext : DbContext
     {
-        public DataFashionContext()
+        public PhTechContext()
         {
         }
 
-        public DataFashionContext(DbContextOptions<DataFashionContext> options)
+        public PhTechContext(DbContextOptions<PhTechContext> options)
             : base(options)
         {
         }
@@ -20,7 +18,6 @@ namespace Admin.Models
         public virtual DbSet<Brand> Brands { get; set; }
         public virtual DbSet<Color> Colors { get; set; }
         public virtual DbSet<Credential> Credentials { get; set; }
-        public virtual DbSet<Donation> Donations { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
@@ -29,18 +26,13 @@ namespace Admin.Models
         public virtual DbSet<Size> Sizes { get; set; }
         public virtual DbSet<Type> Types { get; set; }
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<UserDonation> UserDonations { get; set; }
         public virtual DbSet<Voucher> Vouchers { get; set; }
         public virtual DbSet<Warehouse> Warehouses { get; set; }
         public virtual DbSet<WarehouseDetail> WarehouseDetails { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-QEP45U8\\CRRTTZ;Database=DataFashion;Trusted_Connection=True;");
-            }
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,21 +41,19 @@ namespace Admin.Models
 
             modelBuilder.Entity<Brand>(entity =>
             {
-                entity.ToTable("brand");
+                entity.ToTable("Brands");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-
                 entity.Property(e => e.Tilte)
                     .HasMaxLength(255)
-                    .HasColumnName("tilte");
+                    .HasColumnName("title");
             });
 
             modelBuilder.Entity<Color>(entity =>
             {
-                entity.ToTable("Color");
+                entity.ToTable("Colors");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(50)
@@ -73,11 +63,9 @@ namespace Admin.Models
             modelBuilder.Entity<Credential>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("id");
-
                 entity.Property(e => e.PermissionId)
                     .HasMaxLength(50)
                     .HasColumnName("PermissionID");
-
                 entity.Property(e => e.RoleId)
                     .HasMaxLength(50)
                     .HasColumnName("RoleID");
@@ -86,93 +74,40 @@ namespace Admin.Models
                     .WithMany(p => p.Credentials)
                     .HasForeignKey(d => d.PermissionId)
                     .HasConstraintName("FK_Credentials_Permission");
-
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Credentials)
                     .HasForeignKey(d => d.RoleId)
                     .HasConstraintName("FK_Credentials_Role");
             });
 
-            modelBuilder.Entity<Donation>(entity =>
-            {
-                entity.ToTable("donation");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("description")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.EndDay)
-                    .HasColumnType("date")
-                    .HasColumnName("endDay");
-
-                entity.Property(e => e.ImageUrl)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("imageUrl")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("name")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.OrganizationName)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("organizationName")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.Phone)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("phone")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.StartDay)
-                    .HasColumnType("date")
-                    .HasColumnName("startDay");
-
-                entity.Property(e => e.Status).HasColumnName("status");
-            });
-
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.ToTable("order");
+                entity.ToTable("Orders");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-
                 entity.Property(e => e.CreateAt)
                     .HasColumnType("datetime")
                     .HasColumnName("create_at");
-
                 entity.Property(e => e.Note)
                     .HasMaxLength(200)
                     .HasColumnName("note");
-
                 entity.Property(e => e.OrderId)
                     .IsRequired()
                     .HasMaxLength(50)
                     .HasColumnName("order_id");
-
                 entity.Property(e => e.Status).HasColumnName("status");
-
                 entity.Property(e => e.TotalPrice).HasColumnName("total_price");
-
                 entity.Property(e => e.UserId).HasColumnName("user_id");
-
                 entity.Property(e => e.VoucherId).HasColumnName("voucher_id");
+                entity.Property(e => e.PaymentMethod).HasColumnName("payment_method");
+                entity.Property(e => e.PaymentStatus).HasColumnName("payment_status");
+                entity.Property(e => e.PaymentDetail).HasColumnName("payment_detail");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_order_user");
-
                 entity.HasOne(d => d.Voucher)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.VoucherId)
@@ -181,23 +116,18 @@ namespace Admin.Models
 
             modelBuilder.Entity<OrderDetail>(entity =>
             {
-                entity.ToTable("order_details");
+                entity.ToTable("OrderDetails");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-
                 entity.Property(e => e.OrderId).HasColumnName("order_id");
-
                 entity.Property(e => e.Price).HasColumnName("price");
-
                 entity.Property(e => e.ProductId).HasColumnName("product_id");
-
                 entity.Property(e => e.Quantity).HasColumnName("quantity");
 
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
                     .HasConstraintName("FK_order_detalis_order");
-
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.ProductId)
@@ -206,7 +136,7 @@ namespace Admin.Models
 
             modelBuilder.Entity<Permission>(entity =>
             {
-                entity.ToTable("Permission");
+                entity.ToTable("Permissions");
 
                 entity.Property(e => e.Id)
                     .HasMaxLength(50)
@@ -219,42 +149,31 @@ namespace Admin.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.ToTable("product");
+                entity.ToTable("Products");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-
                 entity.Property(e => e.OutPrice).HasColumnName("out_price");
-
                 entity.Property(e => e.ProductBrand).HasColumnName("product_brand");
-
                 entity.Property(e => e.ProductCode)
                     .IsRequired()
                     .HasMaxLength(50)
                     .HasColumnName("product_code");
-
                 entity.Property(e => e.ProductColor).HasColumnName("product_color");
-
                 entity.Property(e => e.ProductDescription)
                     .IsRequired()
                     .HasColumnName("product_description");
-
                 entity.Property(e => e.ProductImage)
                     .IsRequired()
                     .HasColumnName("product_image");
-
                 entity.Property(e => e.ProductName)
                     .IsRequired()
                     .HasMaxLength(255)
                     .HasColumnName("product_name");
 
                 entity.Property(e => e.ProductQuantity).HasColumnName("product_quantity");
-
                 entity.Property(e => e.ProductSize).HasColumnName("product_size");
-
                 entity.Property(e => e.ProductSpec).HasColumnName("product_spec");
-
                 entity.Property(e => e.ProductType).HasColumnName("product_type");
-
                 entity.Property(e => e.Status).HasColumnName("status");
 
                 entity.HasOne(d => d.ProductBrandNavigation)
@@ -284,7 +203,7 @@ namespace Admin.Models
 
             modelBuilder.Entity<Role>(entity =>
             {
-                entity.ToTable("Role");
+                entity.ToTable("Roles");
 
                 entity.Property(e => e.Id)
                     .HasMaxLength(50)
@@ -297,7 +216,7 @@ namespace Admin.Models
 
             modelBuilder.Entity<Size>(entity =>
             {
-                entity.ToTable("Size");
+                entity.ToTable("Sizes");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -308,18 +227,18 @@ namespace Admin.Models
 
             modelBuilder.Entity<Type>(entity =>
             {
-                entity.ToTable("type");
+                entity.ToTable("Types");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Tilte)
                     .HasMaxLength(255)
-                    .HasColumnName("tilte");
+                    .HasColumnName("title");
             });
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("user");
+                entity.ToTable("Users");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -360,42 +279,9 @@ namespace Admin.Models
                     .HasConstraintName("FK_user_role");
             });
 
-            modelBuilder.Entity<UserDonation>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("user_donation");
-
-                entity.Property(e => e.CreateAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("createAt");
-
-                entity.Property(e => e.DonationId).HasColumnName("donation_id");
-
-                entity.Property(e => e.Money).HasColumnName("money");
-
-                entity.Property(e => e.Name)
-                    .HasMaxLength(50)
-                    .HasColumnName("name")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.Status)
-                    .HasMaxLength(10)
-                    .HasColumnName("status")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.UserId).HasColumnName("user_id");
-
-                entity.HasOne(d => d.Donation)
-                    .WithMany()
-                    .HasForeignKey(d => d.DonationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_user_donation_donation");
-            });
-
             modelBuilder.Entity<Voucher>(entity =>
             {
-                entity.ToTable("voucher");
+                entity.ToTable("Vouchers");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -422,7 +308,7 @@ namespace Admin.Models
 
             modelBuilder.Entity<Warehouse>(entity =>
             {
-                entity.ToTable("warehouse");
+                entity.ToTable("Warehouses");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -445,7 +331,7 @@ namespace Admin.Models
 
             modelBuilder.Entity<WarehouseDetail>(entity =>
             {
-                entity.ToTable("warehouse_detail");
+                entity.ToTable("WarehouseDetails");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 

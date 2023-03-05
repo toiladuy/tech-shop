@@ -10,7 +10,7 @@ namespace AdminWeb.Command
     public class CheckPermission
     {
         
-        public bool HasCredential(String RoleID, String Permission, DataFashionContext context)
+        public bool HasCredential(String RoleID, String Permission, PhTechContext context)
         {
             var data = from a in context.Credentials // bang cap quyen
                        join b in context.Roles on a.RoleId equals b.Id // bang vai tro

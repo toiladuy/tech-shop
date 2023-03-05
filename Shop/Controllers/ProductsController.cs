@@ -12,9 +12,9 @@ namespace Admin.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
 
-        public ProductsController(DataFashionContext context)
+        public ProductsController(PhTechContext context)
         {
             _context = context;
         }

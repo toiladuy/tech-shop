@@ -12,9 +12,9 @@ namespace Shop.Controllers
 {
     public class OrdersController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
 
-        public OrdersController(DataFashionContext context)
+        public OrdersController(PhTechContext context)
         {
             _context = context;
         }

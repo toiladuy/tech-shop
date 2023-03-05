@@ -14,9 +14,9 @@ namespace Shop.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
 
-        public UsersController(DataFashionContext context)
+        public UsersController(PhTechContext context)
         {
             _context = context;
         }

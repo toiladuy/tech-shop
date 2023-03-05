@@ -14,8 +14,8 @@ namespace Shop.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly DataFashionContext _context;
-        public HomeController(ILogger<HomeController> logger, DataFashionContext context)
+        private readonly PhTechContext _context;
+        public HomeController(ILogger<HomeController> logger, PhTechContext context)
         {
             _logger = logger;
             _context = context;

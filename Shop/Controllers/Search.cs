@@ -12,9 +12,9 @@ namespace Shop.Controllers
 {
     public class Search : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
 
-        public Search(DataFashionContext context)
+        public Search(PhTechContext context)
         {
             _context = context;
         }

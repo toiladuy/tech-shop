@@ -16,10 +16,10 @@ namespace Admin.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
         CheckPermission check = new CheckPermission();
         private readonly IWebHostEnvironment webHostEnvironment;
-        public ProductsController(DataFashionContext context, IWebHostEnvironment hostEnvironment)
+        public ProductsController(PhTechContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
             webHostEnvironment = hostEnvironment;

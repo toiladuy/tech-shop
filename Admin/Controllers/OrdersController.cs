@@ -14,9 +14,9 @@ namespace Admin.Controllers
 {
     public class OrdersController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
         CheckPermission check = new CheckPermission();
-        public OrdersController(DataFashionContext context)
+        public OrdersController(PhTechContext context)
         {
             _context = context;
         }

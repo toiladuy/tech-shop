@@ -13,9 +13,9 @@ namespace Admin.Controllers
 {
     public class RolesController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
         CheckPermission check = new CheckPermission();
-        public RolesController(DataFashionContext context)
+        public RolesController(PhTechContext context)
         {
             _context = context;
         }

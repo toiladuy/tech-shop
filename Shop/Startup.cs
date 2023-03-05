@@ -26,7 +26,7 @@ namespace Shop
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<DataFashionContext>(Option => Option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<PhTechContext>(Option => Option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSession();
             services.AddMvc();
         }

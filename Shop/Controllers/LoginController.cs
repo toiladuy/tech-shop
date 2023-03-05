@@ -11,9 +11,9 @@ namespace AdminWeb.Controllers
 {
     public class LoginController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
 
-        public LoginController(DataFashionContext context)
+        public LoginController(PhTechContext context)
         {
             _context = context;
         }

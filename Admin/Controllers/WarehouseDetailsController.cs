@@ -11,9 +11,9 @@ namespace Admin.Controllers
 {
     public class WarehouseDetailsController : Controller
     {
-        private readonly DataFashionContext _context;
+        private readonly PhTechContext _context;
 
-        public WarehouseDetailsController(DataFashionContext context)
+        public WarehouseDetailsController(PhTechContext context)
         {
             _context = context;
         }

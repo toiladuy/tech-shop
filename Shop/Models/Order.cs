@@ -20,6 +20,9 @@ namespace Shop.Models
         public int? VoucherId { get; set; }
         public int? Status { get; set; }
         public string Note { get; set; }
+        public string PaymentMethod { get; set; }
+        public int? PaymentStatus { get; set; }
+        public string PaymentDetail { get; set; }
 
         public virtual User User { get; set; }
         public virtual Voucher Voucher { get; set; }
