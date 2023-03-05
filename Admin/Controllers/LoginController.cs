@@ -30,8 +30,8 @@ namespace AdminWeb.Controllers
             String btnLogin = HttpContext.Request.Form["login"];
             if (btnLogin != null)
             {
-                var dataFashionContext = _context.Users.Include(u => u.Role);
-                var data = dataFashionContext.Where(s => s.Email.Equals(email) && s.Password.Equals(Pass) && s.Status == 1).ToList();
+                var phContext = _context.Users.Include(u => u.Role);
+                var data = phContext.Where(s => s.Email.Equals(email) && s.Password.Equals(Pass) && s.Status == 1).ToList();
                 if (data.Count > 0)
                 {
                     HttpContext.Session.SetString("user", data.FirstOrDefault().Id.ToString());

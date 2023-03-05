@@ -30,8 +30,8 @@ namespace Admin.Controllers
             }
             else
             {
-                var dataFashionContext = _context.Credentials.Include(c => c.Permission).Include(c => c.Role);
-                return View(await dataFashionContext.ToListAsync());
+                var phContext = _context.Credentials.Include(c => c.Permission).Include(c => c.Role);
+                return View(await phContext.ToListAsync());
             }
         
         }

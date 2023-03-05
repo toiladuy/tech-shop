@@ -20,30 +20,31 @@ namespace Shop.Controllers
         }
 
         // GET: OrderDetails
-      
+
         public async Task<IActionResult> Index()
         {
             var user = HttpContext.Session.GetString("user");
             int? checkOrderID = 0;
-            if(user != null)
+            if (user != null)
             {
                 ViewData["Voucher"] = _context.Vouchers;
-                var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
-               if(checkOrderID == 0)
+
+                var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                checkOrderID = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+
+                var orderDetailsCtx = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
+                if (checkOrderID == 0)
                 {
-                    var dataFashionContext2 = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
-                    return View(await dataFashionContext2.ToListAsync());
+                    return View(await orderDetailsCtx.ToListAsync());
                 }
-                var dataFashionContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
-                return View(await dataFashionContext.ToListAsync());
-               
+                return View(await orderDetailsCtx.Where(s => s.OrderId == checkOrderID).ToListAsync());
+
             }
             else
             {
                 return Redirect("/Login");
             }
-           
+
         }
         public async Task<IActionResult> Wishlist()
         {
@@ -51,16 +52,16 @@ namespace Shop.Controllers
             int? checkOrderID = 0;
             if (user != null)
             {
-              
-                var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(6)).FirstOrDefault()?.Id;
+
+                var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(6)).FirstOrDefault()?.Id;
                 if (checkOrderID == 0)
                 {
-                    var dataFashionContext2 = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
-                    return View(await dataFashionContext2.ToListAsync());
+                    var phContext2 = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
+                    return View(await phContext2.ToListAsync());
                 }
-                var dataFashionContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
-                return View(await dataFashionContext.ToListAsync());
+                var phContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
+                return View(await phContext.ToListAsync());
 
             }
             else

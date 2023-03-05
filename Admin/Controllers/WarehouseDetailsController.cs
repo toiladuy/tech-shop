@@ -21,8 +21,8 @@ namespace Admin.Controllers
         // GET: WarehouseDetails
         public async Task<IActionResult> Index()
         {
-            var dataFashionContext = _context.WarehouseDetails.Include(w => w.Product).Include(w => w.User);
-            return View(await dataFashionContext.ToListAsync());
+            var phContext = _context.WarehouseDetails.Include(w => w.Product).Include(w => w.User);
+            return View(await phContext.ToListAsync());
         }
 
         // GET: WarehouseDetails/Details/5

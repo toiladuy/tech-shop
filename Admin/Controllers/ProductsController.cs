@@ -35,12 +35,12 @@ namespace Admin.Controllers
             }
             else
             {
-                var dataFashionContext = _context.Products
+                var phContext = _context.Products
                     .Include(p => p.ProductBrandNavigation)
                     .Include(p => p.ProductColorNavigation)
                     .Include(p => p.ProductSizeNavigation)
                     .Include(p => p.ProductTypeNavigation);
-                return View(await dataFashionContext.ToListAsync());
+                return View(await phContext.ToListAsync());
             }
 
         }

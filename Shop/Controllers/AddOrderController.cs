@@ -48,8 +48,8 @@ namespace Shop.Controllers
                 }
                 else
                 {
-                    var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    var checkOrderExist = dataFashionContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+                    var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                    var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
                     if (checkOrderExist.Count() > 0)
                     {
                         var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
@@ -445,8 +445,8 @@ namespace Shop.Controllers
             _context.SaveChanges();
             var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(ProductID));
             var user = HttpContext.Session.GetString("user");
-            var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrderExist = dataFashionContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+            var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
             var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
             var orderder = data.Where(x => x.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
             double totlaprice = 0;
@@ -471,8 +471,8 @@ namespace Shop.Controllers
             _context.SaveChanges();
             var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(ProductID));
             var user = HttpContext.Session.GetString("user");
-            var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrderExist = dataFashionContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+            var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
             var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
             var orderder = data.Where(x => x.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
             double totlaprice = 0;
@@ -503,8 +503,8 @@ namespace Shop.Controllers
                 _context.SaveChanges();
                 var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(ProductID));
                 var user = HttpContext.Session.GetString("user");
-                var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                var checkOrderExist = dataFashionContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+                var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
                 var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
                 var orderder = data.Where(x => x.OrderId.Equals(checkOrderExist.FirstOrDefault().Id));
                 double totlaprice = 0;
@@ -537,8 +537,8 @@ namespace Shop.Controllers
                 return Redirect("/OrderDetails");
             }
             percent = _context.Vouchers.Where(x => x.VoucherCode.Equals(voucher)).FirstOrDefault()?.VoucherDiscount;
-            var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrderExist = dataFashionContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
+            var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+            var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1));
             checkOrderExist.FirstOrDefault().TotalPrice = (checkOrderExist.FirstOrDefault().TotalPrice) - Convert.ToDouble(checkOrderExist.FirstOrDefault().TotalPrice * (percent / 100));
             checkOrderExist.FirstOrDefault().VoucherId = _context.Vouchers.Where(x => x.VoucherCode.EndsWith(voucher)).FirstOrDefault().Id;
             _context.Orders.Update(checkOrderExist.FirstOrDefault());
@@ -564,8 +564,8 @@ namespace Shop.Controllers
                 }
                 else
                 {
-                    var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    var checkOrderExist = dataFashionContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(6));
+                    var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                    var checkOrderExist = phContext.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(6));
                     if (checkOrderExist.Count() > 0)
                     {
                         var data = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);

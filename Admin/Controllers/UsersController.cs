@@ -32,9 +32,9 @@ namespace Admin.Controllers
             }
             else
             {
-            var dataFashionContext = _context.Users.Include(u => u.Role);
+            var phContext = _context.Users.Include(u => u.Role);
                 TempData["checkuser"] = user1;
-                return View(await dataFashionContext.ToListAsync());
+                return View(await phContext.ToListAsync());
             }
                
         }

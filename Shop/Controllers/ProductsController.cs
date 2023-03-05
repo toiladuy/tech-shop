@@ -23,13 +23,13 @@ namespace Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var dataFashionContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Status == 1);
+            var phContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.Status == 1);
             ViewData["ProductBrand"] = _context.Brands;
             ViewData["ProductSize"] = _context.Sizes;
             ViewData["ProductType"] = _context.Types;
             ViewData["ProductColor"] = _context.Colors;
-            ViewData["min"] = dataFashionContext.Select(x => x.OutPrice)?.Min();
-            ViewData["max"] = dataFashionContext.Select(x => x.OutPrice)?.Max();
+            ViewData["min"] = phContext.Select(x => x.OutPrice)?.Min();
+            ViewData["max"] = phContext.Select(x => x.OutPrice)?.Max();
             int? checkOrderID = 0;
             var user = HttpContext.Session.GetString("user");
             if (user == null)
@@ -42,8 +42,8 @@ namespace Admin.Controllers
 
                 try
                 {
-                    var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                    var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                    checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
                     if (checkOrderID == 0)
                     {
                         ViewData["orderdeatail"] = null;
@@ -60,7 +60,7 @@ namespace Admin.Controllers
                     ViewData["orderdeatail"] = null;
                 }
             }
-            return View(await dataFashionContext.ToListAsync());
+            return View(await phContext.ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -93,8 +93,8 @@ namespace Admin.Controllers
                 try
                 {
                     int? checkOrderID = 0;
-                    var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                    var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                    checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
                     if (checkOrderID == 0)
                     {
                         ViewData["orderdeatail"] = null;

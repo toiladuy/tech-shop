@@ -258,8 +258,8 @@ namespace AdminWeb.Controllers
         }
         public bool checkEmailExist(string Email)
         {
-            var dataFashionContext = _context.Users.Include(u => u.Role);
-            var data = dataFashionContext.Where(s => s.Email.Equals(Email)).ToList();
+            var phContext = _context.Users.Include(u => u.Role);
+            var data = phContext.Where(s => s.Email.Equals(Email)).ToList();
             if (data.Count() > 0)
             {
                 return false;

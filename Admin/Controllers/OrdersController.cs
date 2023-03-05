@@ -31,8 +31,8 @@ namespace Admin.Controllers
             }
             else
             {
-             var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(x => x.Status >=2  && x.Status < 5);
-            return View(await dataFashionContext.ToListAsync());
+             var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(x => x.Status >=2  && x.Status < 5);
+            return View(await phContext.ToListAsync());
             }
            
         }
@@ -45,8 +45,8 @@ namespace Admin.Controllers
             }
             else
             {
-                var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(x => x.Status == 5);
-                return View(await dataFashionContext.ToListAsync());
+                var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(x => x.Status == 5);
+                return View(await phContext.ToListAsync());
             }
 
         }
@@ -64,8 +64,8 @@ namespace Admin.Controllers
                 return NotFound();
             }
 
-            var dataFashionContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == id);
-            return View(await dataFashionContext.ToListAsync());
+            var phContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == id);
+            return View(await phContext.ToListAsync());
           
         }
 

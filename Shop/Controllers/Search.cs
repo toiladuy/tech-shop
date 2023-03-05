@@ -33,8 +33,8 @@ namespace Shop.Controllers
             {
                 try
                 {
-                    var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                    var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                    checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
                     if (checkOrderID == 0)
                     {
                         ViewData["orderdeatail"] = null;
@@ -63,12 +63,12 @@ namespace Shop.Controllers
                         ViewData["ProductSize"] = _context.Sizes;
                         ViewData["ProductType"] = _context.Types;
                         ViewData["ProductColor"] = _context.Colors;
-                        var dataFashionContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductName.Contains(search));
-                        min = dataFashionContext.Select(x => x.OutPrice)?.Min();
-                        max = dataFashionContext.Select(x => x.OutPrice)?.Max();
+                        var phContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductName.Contains(search));
+                        min = phContext.Select(x => x.OutPrice)?.Min();
+                        max = phContext.Select(x => x.OutPrice)?.Max();
                         ViewData["min"] = min;
                         ViewData["max"] = max;
-                        return View(await dataFashionContext.ToListAsync());
+                        return View(await phContext.ToListAsync());
                     }
                     else
                     {
@@ -81,12 +81,12 @@ namespace Shop.Controllers
                         ViewData["ProductSize"] = _context.Sizes;
                         ViewData["ProductType"] = _context.Types;
                         ViewData["ProductColor"] = _context.Colors;
-                        var dataFashionContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.OutPrice >= Convert.ToDouble(b[0].Trim()) && x.OutPrice <= Convert.ToDouble(a[2].Trim()));
-                        min = dataFashionContext.Select(x => x.OutPrice)?.Min();
-                        max = dataFashionContext.Select(x => x.OutPrice)?.Max();
+                        var phContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.OutPrice >= Convert.ToDouble(b[0].Trim()) && x.OutPrice <= Convert.ToDouble(a[2].Trim()));
+                        min = phContext.Select(x => x.OutPrice)?.Min();
+                        max = phContext.Select(x => x.OutPrice)?.Max();
                         ViewData["min"] = min;
                         ViewData["max"] = max;
-                        return View(await dataFashionContext.ToListAsync());
+                        return View(await phContext.ToListAsync());
                     }
                 }
                 catch
@@ -106,12 +106,12 @@ namespace Shop.Controllers
                     ViewData["ProductSize"] = _context.Sizes;
                     ViewData["ProductType"] = _context.Types;
                     ViewData["ProductColor"] = _context.Colors;
-                    var dataFashionContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductTypeNavigation.Id.Equals(Int32.Parse(arrListStr[0])));
-                    min = dataFashionContext.Select(x => x.OutPrice).DefaultIfEmpty().Min();
-                    max = dataFashionContext.Select(x => x.OutPrice).DefaultIfEmpty().Max();
+                    var phContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductTypeNavigation.Id.Equals(Int32.Parse(arrListStr[0])));
+                    min = phContext.Select(x => x.OutPrice).DefaultIfEmpty().Min();
+                    max = phContext.Select(x => x.OutPrice).DefaultIfEmpty().Max();
                     ViewData["min"] = min;
                     ViewData["max"] = max;
-                    return View(await dataFashionContext.ToListAsync());
+                    return View(await phContext.ToListAsync());
                 }
                 else if (arrListStr[1].Equals("brand"))
                 {
@@ -119,12 +119,12 @@ namespace Shop.Controllers
                     ViewData["ProductSize"] = _context.Sizes;
                     ViewData["ProductType"] = _context.Types;
                     ViewData["ProductColor"] = _context.Colors;
-                    var dataFashionContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductBrandNavigation.Id.Equals(Int32.Parse(arrListStr[0])));
-                    min = dataFashionContext.Select(x => x.OutPrice).DefaultIfEmpty().Min();
-                    max = dataFashionContext.Select(x => x.OutPrice).DefaultIfEmpty().Max();
+                    var phContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductBrandNavigation.Id.Equals(Int32.Parse(arrListStr[0])));
+                    min = phContext.Select(x => x.OutPrice).DefaultIfEmpty().Min();
+                    max = phContext.Select(x => x.OutPrice).DefaultIfEmpty().Max();
                     ViewData["min"] = min;
                     ViewData["max"] = max;
-                    return View(await dataFashionContext.ToListAsync());
+                    return View(await phContext.ToListAsync());
                 }
                 else if (arrListStr[1].Equals("size"))
                 {
@@ -132,12 +132,12 @@ namespace Shop.Controllers
                     ViewData["ProductSize"] = _context.Sizes;
                     ViewData["ProductType"] = _context.Types;
                     ViewData["ProductColor"] = _context.Colors;
-                    var dataFashionContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductSizeNavigation.Id.Equals(Int32.Parse(arrListStr[0])));
-                    min = dataFashionContext.Select(x => x.OutPrice).DefaultIfEmpty().Min();
-                    max = dataFashionContext.Select(x => x.OutPrice).DefaultIfEmpty().Max();
+                    var phContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductSizeNavigation.Id.Equals(Int32.Parse(arrListStr[0])));
+                    min = phContext.Select(x => x.OutPrice).DefaultIfEmpty().Min();
+                    max = phContext.Select(x => x.OutPrice).DefaultIfEmpty().Max();
                     ViewData["min"] = min;
                     ViewData["max"] = max;
-                    return View(await dataFashionContext.ToListAsync());
+                    return View(await phContext.ToListAsync());
                 }
                 else
                 {
@@ -145,12 +145,12 @@ namespace Shop.Controllers
                     ViewData["ProductSize"] = _context.Sizes;
                     ViewData["ProductType"] = _context.Types;
                     ViewData["ProductColor"] = _context.Colors;
-                    var dataFashionContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductColorNavigation.Id.Equals(Int32.Parse(arrListStr[0])));
-                    min = dataFashionContext.Select(x => x.OutPrice).DefaultIfEmpty().Min();
-                    max = dataFashionContext.Select(x => x.OutPrice).DefaultIfEmpty().Max();
+                    var phContext = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation).Include(p => p.ProductTypeNavigation).Where(x => x.ProductColorNavigation.Id.Equals(Int32.Parse(arrListStr[0])));
+                    min = phContext.Select(x => x.OutPrice).DefaultIfEmpty().Min();
+                    max = phContext.Select(x => x.OutPrice).DefaultIfEmpty().Max();
                     ViewData["min"] = min;
                     ViewData["max"] = max;
-                    return View(await dataFashionContext.ToListAsync());
+                    return View(await phContext.ToListAsync());
                 }
 
             }

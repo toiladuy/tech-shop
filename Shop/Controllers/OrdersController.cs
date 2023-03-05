@@ -23,9 +23,9 @@ namespace Shop.Controllers
         public async Task<IActionResult> Index()
         {
             var user = HttpContext.Session.GetString("user");
-            var dataFashionContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.UserId.Equals(Int32.Parse(user)));
+            var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.UserId.Equals(Int32.Parse(user)));
 
-            return View(await dataFashionContext.ToListAsync());
+            return View(await phContext.ToListAsync());
         }
 
         // GET: Orders/Details/5
@@ -37,8 +37,8 @@ namespace Shop.Controllers
                 return NotFound();
             }
             int? checkOrderID = 0;
-            var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+            var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+            checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
             if (checkOrderID == 0)
             {
                 ViewData["orderdeatail"] = null;
@@ -50,8 +50,8 @@ namespace Shop.Controllers
 
             }
 
-            var dataFashionContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == id);
-            return View(await dataFashionContext.ToListAsync());
+            var phContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == id);
+            return View(await phContext.ToListAsync());
         }
 
         // GET: Orders/Create

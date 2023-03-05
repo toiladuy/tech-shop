@@ -37,8 +37,8 @@ namespace Shop.Controllers
                 ViewData["orderdeatail"] = null;
                 try
                 {
-                    var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                    var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                    checkOrderID = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
                     if (checkOrderID == 0)
                     {
                         ViewData["orderdeatail"] = null;

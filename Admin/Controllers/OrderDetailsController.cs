@@ -30,8 +30,8 @@ namespace Admin.Controllers
             }
             else
             {
-                var dataFashionContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
-                return View(await dataFashionContext.ToListAsync());
+                var phContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
+                return View(await phContext.ToListAsync());
             }
 
            

@@ -24,8 +24,8 @@ namespace Shop.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            var dataFashionContext = _context.Users.Include(u => u.Role);
-            return View(await dataFashionContext.ToListAsync());
+            var phContext = _context.Users.Include(u => u.Role);
+            return View(await phContext.ToListAsync());
         }
 
         // GET: Users/Details/5
@@ -85,8 +85,8 @@ namespace Shop.Controllers
             {
                 try
                 {
-                    var dataFashionContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    checkOrderID = dataFashionContext1.Where(s => s.UserId.Equals(Int32.Parse(User)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                    var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                    checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(User)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
                     if (checkOrderID == 0)
                     {
                         ViewData["orderdeatail"] = null;
@@ -204,19 +204,19 @@ namespace Shop.Controllers
             String curentpassword = HttpContext.Request.Form["current-password"];
             String newpassword = HttpContext.Request.Form["newpassword"];
             String confirmpwd = HttpContext.Request.Form["confirm-pwd"];
-            var dataFashionContext = _context.Users.Include(u => u.Role).Where(x => x.Id == Int32.Parse(user));
+            var phContext = _context.Users.Include(u => u.Role).Where(x => x.Id == Int32.Parse(user));
             if (confirmpwd != newpassword)
             {
                 return RedirectToAction(nameof(Edit));
             }
-            else if (curentpassword != dataFashionContext.FirstOrDefault().Password)
+            else if (curentpassword != phContext.FirstOrDefault().Password)
             {
                 return RedirectToAction(nameof(Edit));
             }
             else
             {
-                dataFashionContext.FirstOrDefault().Password = newpassword;
-                _context.Update(dataFashionContext.FirstOrDefault());
+                phContext.FirstOrDefault().Password = newpassword;
+                _context.Update(phContext.FirstOrDefault());
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Edit));
             }
