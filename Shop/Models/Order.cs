@@ -32,5 +32,15 @@ namespace Shop.Models
         {
             return Status.Equals(OrderStatus.New);
         }
+
+        public bool IsCOD()
+        {
+            return PaymentMethod.Equals(Payment.Method.COD);
+        }
+
+        public bool IsPaid()
+        {
+            return PaymentStatus.Equals(Payment.Status.PAID);
+        }
     }
 }

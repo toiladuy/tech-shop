@@ -24,20 +24,20 @@ namespace Shop.Controllers
         public async Task<IActionResult> Index()
         {
             var user = HttpContext.Session.GetString("user");
-            int? checkOrderID = 0;
             if (user != null)
             {
                 ViewData["Voucher"] = _context.Vouchers;
 
                 var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                checkOrderID = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
+                var checkOrder = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
+                ViewData["Order"] = checkOrder;
 
                 var orderDetailsCtx = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
-                if (checkOrderID == 0)
+                if (checkOrder == null)
                 {
                     return View(await orderDetailsCtx.ToListAsync());
                 }
-                return View(await orderDetailsCtx.Where(s => s.OrderId == checkOrderID).ToListAsync());
+                return View(await orderDetailsCtx.Where(s => s.OrderId == checkOrder.Id).ToListAsync());
 
             }
             else

@@ -116,7 +116,7 @@
                                         </td>
                                         <td>@product.ProductName</td>
                                         <td class="text-center">@orderDetail.Quantity</td>
-                                        <td class="text-right">$@orderDetail.Price?.ToString("#,##0.#")</td>
+                                        <td class="text-right">$(@orderDetail.Quantity * @orderDetail.Price)?.ToString("#,##0.#")</td>
                                     </tr>
                                 }
                             }
@@ -142,7 +142,7 @@
                             {
                                 <tr>
                                     <td colspan="3">Voucher code: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
-                                    <td class="text-right text-danger">- $@discount</td>
+                                    <td class="text-right text-danger">- $@discount.ToString("#,##0.#")</td>
                                 </tr>
                             }
                             <tr>
@@ -151,6 +151,16 @@
                                 }
                                 <td colspan="3"><strong>Total</strong></td>
                                 <td class="text-right"><strong>$@total.ToString("#,##0.#")</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">Payment</td>
+                                @if (isCOD)
+                                {
+                                    <td class="text-right">Not Paid (Cash on Delivery)</td>
+                                } else
+                                {
+                                    <td class="text-right text-success">Paid (Zalo Pay)</td>
+                                }
                             </tr>
                         </tfoot>
                     </table>

@@ -194,46 +194,7 @@ namespace Shop.Controllers
             checkOrder.PaymentMethod = Payment.Method.COD.ToString();
             _context.Orders.Update(checkOrder);
             _context.SaveChanges();
-            AfterCheckoutDone();
             return Redirect("PaymentComplete");
-        }
-
-        private void AfterCheckoutDone()
-        {
-            var user = HttpContext.Session.GetString("user");
-
-            var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
-            checkOrder.Status = OrderStatus.WaitingForConfirm;
-            _context.Orders.Update(checkOrder);
-            _context.SaveChanges();
-
-            var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
-            foreach (OrderDetail orderDetail in orderDetails)
-            {
-                var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation)
-                    .Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(orderDetail.ProductId));
-                product.FirstOrDefault().ProductQuantity = Convert.ToInt32(product.FirstOrDefault().ProductQuantity - orderDetail.Quantity);
-                _context.Products.Update(product.FirstOrDefault());
-                _context.SaveChanges();
-            }
-
-            try
-            {
-                if (checkOrder.VoucherId != null)
-                {
-                    var voucher = _context.Vouchers.Where(x => x.Id.Equals(checkOrder.VoucherId)).FirstOrDefault();
-                    if (voucher != null)
-                    {
-                        voucher.Quantity--;
-                        _context.Vouchers.Update(voucher);
-                        _context.SaveChanges();
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         [HttpPost]
@@ -310,61 +271,52 @@ namespace Shop.Controllers
                     return View();
                 }
             }
-            else if (checkOrder.Status != 1)
+            else
             {
                 // COD
                 ViewData["IsPaymentSuccess"] = true;
                 ViewData["IsCOD"] = true;
+                AfterCheckoutDone();
                 return View(orderDetails);
-            }
-            else
-            {
-                return Redirect("/AddOrder/Indexcheckout");
             }
         }
 
-        [HttpPost]
-        public IActionResult PaymentCallback([FromBody] Dictionary<string, object> cbdata)
+        private void AfterCheckoutDone()
         {
-            Debug.WriteLine("Callback = {0}", cbdata);
+            var user = HttpContext.Session.GetString("user");
 
-            //var result = new Dictionary<string, object>();
+            var checkOrder = _context.Orders.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
+            checkOrder.Status = OrderStatus.WaitingForConfirm;
+            _context.Orders.Update(checkOrder);
+            _context.SaveChanges();
 
-            //try
-            //{
-            //    var dataStr = Convert.ToString(cbdata["data"]);
-            //    var reqMac = Convert.ToString(cbdata["mac"]);
-            //    string key2 = "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf";
-            //    var mac = HmacUtils.Compute(key2, dataStr);
+            var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id).ToArray();
+            foreach (OrderDetail orderDetail in orderDetails)
+            {
+                var product = _context.Products.Include(p => p.ProductBrandNavigation).Include(p => p.ProductSizeNavigation)
+                    .Include(p => p.ProductTypeNavigation).Where(x => x.Id.Equals(orderDetail.ProductId));
+                product.FirstOrDefault().ProductQuantity = Convert.ToInt32(product.FirstOrDefault().ProductQuantity - orderDetail.Quantity);
+                _context.Products.Update(product.FirstOrDefault());
+                _context.SaveChanges();
+            }
 
-            //    Console.WriteLine("mac = {0}", mac);
-
-            //    // kiểm tra callback hợp lệ (đến từ ZaloPay server)
-            //    if (!reqMac.Equals(mac))
-            //    {
-            //        // callback không hợp lệ
-            //        result["return_code"] = -1;
-            //        result["return_message"] = "mac not equal";
-            //    }
-            //    else
-            //    {
-            //        // thanh toán thành công
-            //        // merchant cập nhật trạng thái cho đơn hàng
-            //        var dataJson = JsonConvert.DeserializeObject<Dictionary<string, object>>(dataStr);
-            //        Console.WriteLine("update order's status = success where app_trans_id = {0}", dataJson["app_trans_id"]);
-
-            //        result["return_code"] = 1;
-            //        result["return_message"] = "success";
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    result["return_code"] = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
-            //    result["return_message"] = ex.Message;
-            //}
-
-            // thông báo kết quả cho ZaloPay server
-            return Ok(cbdata);
+            try
+            {
+                if (checkOrder.VoucherId != null)
+                {
+                    var voucher = _context.Vouchers.Where(x => x.Id.Equals(checkOrder.VoucherId)).FirstOrDefault();
+                    if (voucher != null)
+                    {
+                        voucher.Quantity--;
+                        _context.Vouchers.Update(voucher);
+                        _context.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public ActionResult PayViaMomo()

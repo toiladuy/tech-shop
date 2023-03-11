@@ -31,25 +31,18 @@ namespace Shop.Controllers
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            if (id == null) return NotFound();
             var user = HttpContext.Session.GetString("user");
-            if (id == null)
+            var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+            var checkOrder = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
+            if (checkOrder == null)
             {
-                return NotFound();
+                TempData["AlertType"] = "alert-warning";
+                TempData["AlertMessage"] = "Cart is empty";
+                return Redirect("/Home");
             }
-            int? checkOrderID = 0;
-            var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
-            if (checkOrderID == 0)
-            {
-                ViewData["orderdeatail"] = null;
-
-            }
-            else
-            {
-                ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID); ;
-
-            }
-
+            var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id);
+            ViewData["orderdeatail"] = orderDetails;
             var phContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == id);
             return View(await phContext.ToListAsync());
         }

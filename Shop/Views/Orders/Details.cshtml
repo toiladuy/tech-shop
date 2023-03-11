@@ -1,12 +1,8 @@
-﻿
+﻿@model IEnumerable<Shop.Models.OrderDetail>
+
 @{
     ViewData["Title"] = "Details";
-}
-
-@model IEnumerable<Shop.Models.OrderDetail>
-
-@{
-    ViewData["Title"] = "Index";
+    Order order = ViewData["Order"] as Order;
 }
 
 <main>
@@ -45,7 +41,7 @@
                                         <th class="pro-price">Price</th>
                                         <th class="pro-quantity">Quantity</th>
                                         <th class="pro-subtotal">Total</th>
-                      
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -55,34 +51,67 @@
                                             @{
                                                 string[] arrListStr = item.Product.ProductImage.Split(' ');
                                             }
-                                            <td class="pro-thumbnail"><a href="#"><img class="img-fluid" src="https://localhost:44347/images/@arrListStr[0]" alt="Product" /></a></td>
-                                            <td class="pro-title"><a href="/Products/Details/@item.ProductId">@item.Product.ProductName</a></td>
-                                            <td class="pro-price"><span><input type="text" value="@item.Price" readonly id="price" /></span></td>
-                                            <td class="pro-quantity">
-                                                <div class="pro-quantity">
-                                                    <div class="">
-                                                        <input size="4" type="text" value="@item.Quantity">
-                                                    </div>
-                                                       
-
-                                                    </div>
-</td>
-                                            @{
-                                                var pricetotla = item.Quantity * item.Price;
-                                            }
-                                            <td class="pro-subtotal"><span>@pricetotla?.ToString("#,##0.#")</span></td>
-                                           
+                                            <td class="pro-thumbnail">
+                                                <img class="img-fluid" src="https://localhost:44347/images/@arrListStr[0]" alt="Product" />
+                                            </td>
+                                            <td class="pro-title">
+                                                <a href="/Products/Details/@item.ProductId">@item.Product.ProductName</a>
+                                            </td>
+                                            <td class="pro-price">@item.Price?.ToString("#,##0.#")</td>
+                                            <td class="pro-quantity">@item.Quantity</td>
+                                            <td class="pro-subtotal">$(@item.Quantity * @item.Price)?.ToString("#,##0.#")</td>
                                         </tr>
-                                     
                                     }
                                 </tbody>
+                                <tfoot>
+                                    @{
+                                        double subTotal = 0;
+                                        double discount = 0;
+                                        foreach (var item in Model)
+                                        {
+                                            subTotal += Convert.ToDouble(item.Quantity * item.Price);
+                                        }
+                                        if (order.Voucher != null)
+                                        {
+                                            discount = Math.Round(Convert.ToDouble(order.Voucher.VoucherDiscount) / 100 * subTotal, 2);
+                                        }
+                                    }
+                                    <tr>
+                                        <td colspan="3">Sub Total</td>
+                                        <td class="text-right">$@subTotal.ToString("#,##0.#")</td>
+                                    </tr>
+                                    @if (order.Voucher != null)
+                                    {
+                                        <tr>
+                                            <td colspan="3">Voucher code: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
+                                            <td class="text-right text-danger">- $@discount.ToString("#,##0.#")</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        @{
+                                            double total = subTotal - discount;
+                                        }
+                                        <td colspan="3"><strong>Total</strong></td>
+                                        <td class="text-right"><strong>$@total.ToString("#,##0.#")</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">Payment</td>
+                                        @if (order.IsCOD())
+                                        {
+                                            <td class="text-right">Not Paid (Cash on Delivery)</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-right text-success">Paid (Zalo Pay)</td>
+                                        }
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <!-- Cart Update Option -->
-                     
                     </div>
                 </div>
-       
+
             </div>
         </div>
     </div>
