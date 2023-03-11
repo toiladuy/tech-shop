@@ -41,12 +41,12 @@
                                         <th class="pro-price">Price</th>
                                         <th class="pro-quantity">Quantity</th>
                                         <th class="pro-subtotal">Total</th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var item in Model)
                                     {
+                                        var itemTotal = item.Quantity * item.Price;
                                         <tr>
                                             @{
                                                 string[] arrListStr = item.Product.ProductImage.Split(' ');
@@ -59,7 +59,7 @@
                                             </td>
                                             <td class="pro-price">@item.Price?.ToString("#,##0.#")</td>
                                             <td class="pro-quantity">@item.Quantity</td>
-                                            <td class="pro-subtotal">$(@item.Quantity * @item.Price)?.ToString("#,##0.#")</td>
+                                            <td class="pro-subtotal">$@itemTotal?.ToString("#,##0.#")</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -77,13 +77,13 @@
                                         }
                                     }
                                     <tr>
-                                        <td colspan="3">Sub Total</td>
+                                        <td colspan="4">Sub Total</td>
                                         <td class="text-right">$@subTotal.ToString("#,##0.#")</td>
                                     </tr>
                                     @if (order.Voucher != null)
                                     {
                                         <tr>
-                                            <td colspan="3">Voucher code: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
+                                            <td colspan="4">Voucher: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
                                             <td class="text-right text-danger">- $@discount.ToString("#,##0.#")</td>
                                         </tr>
                                     }
@@ -91,11 +91,11 @@
                                         @{
                                             double total = subTotal - discount;
                                         }
-                                        <td colspan="3"><strong>Total</strong></td>
+                                        <td colspan="4"><strong>Total</strong></td>
                                         <td class="text-right"><strong>$@total.ToString("#,##0.#")</strong></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3">Payment</td>
+                                        <td colspan="4">Payment</td>
                                         @if (order.IsCOD())
                                         {
                                             <td class="text-right">Not Paid (Cash on Delivery)</td>
@@ -117,67 +117,3 @@
     </div>
     <!-- cart main wrapper end -->
 </main>
-<div class="offcanvas-minicart-wrapper">
-    <div class="minicart-inner">
-        <div class="offcanvas-overlay"></div>
-        <div class="minicart-inner-content">
-            <div class="minicart-close">
-                <i class="pe-7s-close"></i>
-            </div>
-            <div class="minicart-content-box">
-                <div class="minicart-item-wrapper">
-                    @{
-                        Double totlalprice = 0;
-                        IEnumerable<OrderDetail> orderderail = ViewData["orderdeatail"] as IEnumerable<OrderDetail>;
-                        if (orderderail == null)
-                        {
-                            <li class="minicart-item">
-
-                            </li>
-                        }
-                        else
-                        {
-                            @foreach (OrderDetail ord in orderderail)
-                            {
-                                totlalprice += Convert.ToDouble(ord.Price * ord.Quantity);
-                                <li class="minicart-item">
-                                    <div class="minicart-thumb">
-                                        @{
-                                            string[] arrListStr = ord.Product.ProductImage.Split(' ');
-                                        }
-                                        <a href="product-details.html">
-                                            <img src="https://localhost:44347/images/@arrListStr[0]" alt="product">
-                                        </a>
-                                    </div>
-                                    <div class="minicart-content">
-                                        <h6 class="product-name">
-                                            <a href="/Products/Details/@ord.Product.Id">@ord.Product.ProductName</a>
-                                        </h6>
-                                        <p>
-                                            <span class="cart-quantity">@ord.Quantity<strong>&times;</strong></span>
-                                            <span class="cart-price">$@ord.Price?.ToString("#,##0.#")</span>
-                                        </p>
-                                    </div>
-                                    <a href="/AddOrder/Delete/@ord.Id" class="minicart-remove"><i class="pe-7s-close"></i></a>
-                                </li>
-                            }
-                        }
-                    }
-                </div>
-
-                <div class="minicart-pricing-box">
-                    <ul>
-                        <li class="total">
-                            <span>total</span>
-                            <span><strong>$@totlalprice.ToString("#,##0.#")</strong></span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="minicart-button">
-                    <a href="/OrderDetails"><i class="fa fa-shopping-cart"></i> View Cart</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

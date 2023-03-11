@@ -35,7 +35,7 @@ namespace Shop.Models
 
         public bool IsCOD()
         {
-            return PaymentMethod.Equals(Payment.Method.COD);
+            return PaymentMethod.Equals(Payment.Method.COD.ToString());
         }
 
         public bool IsPaid()

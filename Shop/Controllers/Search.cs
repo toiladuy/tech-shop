@@ -24,32 +24,8 @@ namespace Shop.Controllers
             var user = HttpContext.Session.GetString("user");
             Double? min = 0;
             Double? max = 0;
-            int? checkOrderID = 0;
-            if (user == null)
-            {
-                ViewData["orderdeatail"] = null;
-            }
-            else
-            {
-                try
-                {
-                    var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                    checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(1)).FirstOrDefault()?.Id;
-                    if (checkOrderID == 0)
-                    {
-                        ViewData["orderdeatail"] = null;
 
-                    }
-                    else
-                    {
-                        ViewData["orderdeatail"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
-                    }
-                }
-                catch
-                {
-                    ViewData["orderdeatail"] = null;
-                }
-            }
+            FillCartData();
 
             if (id == null)
             {
@@ -152,9 +128,29 @@ namespace Shop.Controllers
                     ViewData["max"] = max;
                     return View(await phContext.ToListAsync());
                 }
-
             }
+        }
 
+        private void FillCartData()
+        {
+            var user = HttpContext.Session.GetString("user");
+            if (user == null)
+            {
+                ViewData["cartItems"] = null;
+            }
+            else
+            {
+                var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                var checkOrder = orderCtx.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
+                if (checkOrder == null)
+                {
+                    ViewData["cartItems"] = null;
+                }
+                else
+                {
+                    ViewData["cartItems"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id);
+                }
+            }
         }
     }
 }

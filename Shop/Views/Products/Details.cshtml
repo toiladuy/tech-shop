@@ -140,76 +140,7 @@
         </div>
     </div>
     <!-- page main wrapper end -->
-    <!-- related products area start -->
-    <!-- related products area end -->
 </main>
-
-<!-- offcanvas mini cart start -->
-<div class="offcanvas-minicart-wrapper">
-    <div class="minicart-inner">
-        <div class="offcanvas-overlay"></div>
-        <div class="minicart-inner-content">
-            <div class="minicart-close">
-                <i class="pe-7s-close"></i>
-            </div>
-            <div class="minicart-content-box">
-                <div class="minicart-item-wrapper">
-                    @{
-                        Double totlalprice = 0;
-                        IEnumerable<OrderDetail> orderderail = ViewData["orderdeatail"] as IEnumerable<OrderDetail>;
-                        if (orderderail == null)
-                        {
-                                @*<li class="minicart-item">
-
-                    </li>*@
-                        }
-                        else
-                        {
-                                @foreach (OrderDetail ord in orderderail)
-                            {
-                                totlalprice += Convert.ToDouble(ord.Price * ord.Quantity);
-                                    <li class="minicart-item">
-                                        <div class="minicart-thumb">
-                                            @{
-                                            string[] arrListStr1 = ord.Product.ProductImage.Split(' ');
-                                            }
-                                            <a href="product-details.html">
-                                                <img src="https://localhost:44347/images/@arrListStr1[0]" alt="product">
-                                            </a>
-                                        </div>
-                                        <div class="minicart-content">
-                                            <h6 class="product-name">
-                                                <a href="/Products/Details/@ord.Product.Id">@ord.Product.ProductName</a>
-                                            </h6>
-                                            <p>
-                                                <span class="cart-quantity">@ord.Quantity<strong>&times;</strong></span>
-                                                <span class="cart-price">$@ord.Price</span>
-                                            </p>
-                                        </div>
-                                        <a href="/AddOrder/Delete/@ord.Id" class="minicart-remove"><i class="pe-7s-close"></i></a>
-                                    </li>
-                            }
-                        }
-                    }
-                </div>
-
-                <div class="minicart-pricing-box">
-                    <ul>
-                        <li class="total">
-                            <span>total</span>
-                            <span><strong>$@totlalprice</strong></span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="minicart-button">
-                    <a href="/OrderDetails"><i class="fa fa-shopping-cart"></i> View Cart</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 <style>
     .pro-desc > ul {

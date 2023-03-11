@@ -23,28 +23,48 @@ namespace Shop.Controllers
         public async Task<IActionResult> Index()
         {
             var user = HttpContext.Session.GetString("user");
-            var phContext = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.UserId.Equals(Int32.Parse(user)));
+            var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.UserId.Equals(Int32.Parse(user)));
+            FillCartData();
+            return View(await orderCtx.ToListAsync());
+        }
 
-            return View(await phContext.ToListAsync());
+        private void FillCartData()
+        {
+            var user = HttpContext.Session.GetString("user");
+            if (user == null)
+            {
+                ViewData["cartItems"] = null;
+            }
+            else
+            {
+                var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                var checkOrder = orderCtx.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
+                if (checkOrder == null)
+                {
+                    ViewData["cartItems"] = null;
+                }
+                else
+                {
+                    ViewData["cartItems"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id);
+                }
+            }
         }
 
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-            var user = HttpContext.Session.GetString("user");
-            var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-            var checkOrder = orderCtx.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
-            if (checkOrder == null)
+            var order = _context.Orders.Include(o => o.User).Include(o => o.Voucher).Where(s => s.Id == id).FirstOrDefault();
+            if (order == null)
             {
                 TempData["AlertType"] = "alert-warning";
-                TempData["AlertMessage"] = "Cart is empty";
+                TempData["AlertMessage"] = "Order not found.";
                 return Redirect("/Home");
             }
-            var orderDetails = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id);
-            ViewData["orderdeatail"] = orderDetails;
-            var phContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == id);
-            return View(await phContext.ToListAsync());
+            FillCartData();
+            ViewData["Order"] = order;
+            var orderDetailsCtx = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == id);
+            return View(await orderDetailsCtx.ToListAsync());
         }
 
         // GET: Orders/Create

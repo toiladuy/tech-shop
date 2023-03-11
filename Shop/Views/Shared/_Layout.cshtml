@@ -34,6 +34,18 @@
     <link rel="stylesheet" href="~/css/customcss.css">
 </head>
 <body>
+    @{
+        IEnumerable<OrderDetail> cartItems = ViewData["cartItems"] as IEnumerable<OrderDetail>;
+        Double totalPrice = 0;
+        if (cartItems != null)
+        {
+            foreach (OrderDetail item in cartItems)
+            {
+                totalPrice += Convert.ToDouble(item.Price * item.Quantity);
+            }
+        }
+    }
+
     <header class="header-area header-wide">
         <!-- main header start -->
         @if (TempData["AlertMessage"] != null)
@@ -42,6 +54,7 @@
                 @TempData["AlertMessage"]
             </div>
         }
+
         <div class="main-header d-none d-lg-block">
             <!-- header middle area start -->
             <div class="header-main-area sticky">
@@ -68,7 +81,7 @@
                                                 <a href="/Home">Home</a>
                                             </li>
                                             <li>
-                                                <a href="/Products">shop</a>
+                                                <a href="/Products">Shop</a>
                                             </li>
                                             <li><a href="/Users/ContactUs">Contact us</a></li>
                                         </ul>
@@ -112,7 +125,6 @@
                                                     </ul>
                                                 }
                                             }
-
                                         </li>
                                         <li>
                                             <a href="/OrderDetails/Wishlist">
@@ -120,31 +132,17 @@
                                             </a>
                                         </li>
                                         <li>
-                                            @{
-                                                IEnumerable<OrderDetail> orderderail = ViewData["orderdeatail"] as IEnumerable<OrderDetail>;
-                                                if (orderderail == null)
+                                            <a href="#" class="minicart-btn">
+                                                <i class="pe-7s-shopbag"></i>
+                                                @if (cartItems == null)
                                                 {
-
-
-                                                    <a href="#" class="minicart-btn">
-                                                        <i class="pe-7s-shopbag"></i>
-                                                        <div class="notification">0</div>
-                                                    </a>
+                                                    <div class="notification">0</div>
                                                 }
                                                 else
                                                 {
-                                                    int i = 0;
-                                                    foreach (OrderDetail order in orderderail)
-                                                    {
-                                                        i++;
-                                                    }
-                                                    <a href="#" class="minicart-btn">
-                                                        <i class="pe-7s-shopbag"></i>
-                                                        <div class="notification">@i</div>
-                                                    </a>
+                                                    <div class="notification">@cartItems.Count()</div>
                                                 }
-                                            }
-
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -158,79 +156,72 @@
             <!-- header middle area end -->
         </div>
         <!-- main header start -->
-        
+
     </header>
-    <div>
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
 
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
 
-        <!-- Scroll to top start -->
-        <div class="scroll-top not-visible">
-            <i class="fa fa-angle-up"></i>
-        </div>
+    <!-- Scroll to top start -->
+    <div class="scroll-top not-visible">
+        <i class="fa fa-angle-up"></i>
+    </div>
 
-        <div class="offcanvas-minicart-wrapper">
-            <div class="minicart-inner">
-                <div class="offcanvas-overlay"></div>
-                <div class="minicart-inner-content">
-                    <div class="minicart-close">
-                        <i class="pe-7s-close"></i>
-                    </div>
-                    <div class="minicart-content-box">
-                        <div class="minicart-item-wrapper">
-                            @{
-                                Double totlalprice = 0;
-                                //IEnumerable<OrderDetail> orderderail = ViewData["orderdeatail"] as IEnumerable<OrderDetail>;
-                                if (orderderail == null)
+    <div class="offcanvas-minicart-wrapper">
+        <div class="minicart-inner">
+            <div class="offcanvas-overlay"></div>
+            <div class="minicart-inner-content">
+                <div class="minicart-close">
+                    <i class="pe-7s-close"></i>
+                </div>
+                <div class="minicart-content-box">
+                    <div class="minicart-item-wrapper">
+                        @{
+                            if (cartItems == null)
+                            {
+                                <div class="minicart-item"></div>
+                            }
+                            else
+                            {
+                                @foreach (OrderDetail item in cartItems)
                                 {
-                                    <li class="minicart-item">
-
-                                    </li>
-                                }
-                                else
-                                {
-                                    @foreach (OrderDetail ord in orderderail)
-                                    {
-                                        totlalprice += Convert.ToDouble(ord.Price * ord.Quantity);
-                                        <li class="minicart-item">
-                                            <div class="minicart-thumb">
-                                                @{
-                                                    string[] arrListStr = ord.Product.ProductImage.Split(' ');
-                                                }
-                                                <a href="product-details.html">
-                                                    <img src="https://localhost:44347/images/@arrListStr[0]" alt="product">
-                                                </a>
-                                            </div>
-                                            <div class="minicart-content">
-                                                <h6 class="product-name">
-                                                    <a href="/Products/Details/@ord.Product.Id">@ord.Product.ProductName</a>
-                                                </h6>
-                                                <p>
-                                                    <span class="cart-quantity">@ord.Quantity<strong>&times;</strong></span>
-                                                    <span class="cart-price">$@ord.Price</span>
-                                                </p>
-                                            </div>
-                                            <a href="/AddOrder/Delete/@ord.Id" class="minicart-remove"><i class="pe-7s-close"></i></a>
-                                        </li>
-                                    }
+                                    <div class="minicart-item">
+                                        <div class="minicart-thumb">
+                                            @{
+                                                string[] arrListStr = item.Product.ProductImage.Split(' ');
+                                            }
+                                            <a href="product-details.html">
+                                                <img src="https://localhost:44347/images/@arrListStr[0]" alt="product">
+                                            </a>
+                                        </div>
+                                        <div class="minicart-content">
+                                            <h6 class="product-name">
+                                                <a href="/Products/Details/@item.Product.Id">@item.Product.ProductName</a>
+                                            </h6>
+                                            <p>
+                                                <span class="cart-price">$@item.Price?.ToString("#,##0.#")</span>
+                                                <span class="cart-quantity"> (Qty: @item.Quantity)</span>
+                                            </p>
+                                        </div>
+                                        <a href="/AddOrder/Delete/@item.Id" class="minicart-remove"><i class="pe-7s-close"></i></a>
+                                    </div>
                                 }
                             }
-                        </div>
+                        }
+                    </div>
 
-                        <div class="minicart-pricing-box">
-                            <ul>
-                                <li class="total">
-                                    <span>total</span>
-                                    <span><strong>$@totlalprice</strong></span>
-                                </li>
-                            </ul>
-                        </div>
+                    <div class="minicart-pricing-box">
+                        <ul>
+                            <li class="total">
+                                <span>Total</span>
+                                <span><strong>$@totalPrice.ToString("#,##0.#")</strong></span>
+                            </li>
+                        </ul>
+                    </div>
 
-                        <div class="minicart-button">
-                            <a href="/OrderDetails"><i class="fa fa-shopping-cart"></i> View Cart</a>
-                        </div>
+                    <div class="minicart-button">
+                        <a href="/OrderDetails"><i class="fa fa-shopping-cart"></i> View Cart</a>
                     </div>
                 </div>
             </div>
@@ -239,10 +230,8 @@
 
     <footer class="black-bg">
         <!-- newsletter area start -->
-        
         <!-- newsletter area end -->
         <div class="footer-widget-area">
-           
         </div>
         <div class="footer-bottom-area text-center">
             <div class="container">
@@ -278,7 +267,7 @@
     <script src="~/assets/js/plugins/ajax-mail.js"></script>
     <!-- google map api -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBPKZigQX2Ga0wUohjRHwpT-cdjglkEMM&callback=initMap "
-            async defer ></script>
+            async defer></script>
     <!-- google map active js -->
     <script src="~/assets/js/plugins/map.js"></script>
     <!-- Main JS -->
