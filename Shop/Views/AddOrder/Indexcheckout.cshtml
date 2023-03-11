@@ -136,12 +136,12 @@
                                                 }
                                                 double discountAmount = total * sale / 100;
                                             }
-                                            <tr>
-                                                <td>Sub Total</td>
-                                                <td><strong>$@total.ToString("#,##0.#")</strong></td>
-                                            </tr>
                                             @if (!string.IsNullOrEmpty(vouchercode))
                                             {
+                                                <tr>
+                                                    <td>Sub Total</td>
+                                                    <td><strong>$@total.ToString("#,##0.#")</strong></td>
+                                                </tr>
 
                                                 <tr>
                                                     <td>Voucher (@vouchercode)</td>

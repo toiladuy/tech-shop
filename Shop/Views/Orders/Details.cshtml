@@ -76,12 +76,12 @@
                                             discount = Math.Round(Convert.ToDouble(order.Voucher.VoucherDiscount) / 100 * subTotal, 2);
                                         }
                                     }
-                                    <tr>
-                                        <td colspan="4">Sub Total</td>
-                                        <td class="text-right">$@subTotal.ToString("#,##0.#")</td>
-                                    </tr>
                                     @if (order.Voucher != null)
                                     {
+                                        <tr>
+                                            <td colspan="4">Sub Total</td>
+                                            <td class="text-right">$@subTotal.ToString("#,##0.#")</td>
+                                        </tr>
                                         <tr>
                                             <td colspan="4">Voucher: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
                                             <td class="text-right text-danger">- $@discount.ToString("#,##0.#")</td>
@@ -98,7 +98,7 @@
                                         <td colspan="4">Payment</td>
                                         @if (order.IsCOD())
                                         {
-                                            <td class="text-right">Not Paid (Cash on Delivery)</td>
+                                            <td class="text-right text-danger">Not Paid (Cash on Delivery)</td>
                                         }
                                         else
                                         {

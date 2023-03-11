@@ -131,15 +131,15 @@
                                 }
                                 if (order.Voucher != null)
                                 {
-                                    discount = Math.Round(Convert.ToDouble(order.Voucher.VoucherDiscount)/100 * subTotal, 2);
+                                    discount = Math.Round(Convert.ToDouble(order.Voucher.VoucherDiscount) / 100 * subTotal, 2);
                                 }
                             }
-                            <tr>
-                                <td colspan="3">Sub Total</td>
-                                <td class="text-right">$@subTotal.ToString("#,##0.#")</td>
-                            </tr>
                             @if (order.Voucher != null)
                             {
+                                <tr>
+                                    <td colspan="3">Sub Total</td>
+                                    <td class="text-right">$@subTotal.ToString("#,##0.#")</td>
+                                </tr>
                                 <tr>
                                     <td colspan="3">Voucher code: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
                                     <td class="text-right text-danger">- $@discount.ToString("#,##0.#")</td>
@@ -156,8 +156,9 @@
                                 <td colspan="3">Payment</td>
                                 @if (isCOD)
                                 {
-                                    <td class="text-right">Not Paid (Cash on Delivery)</td>
-                                } else
+                                    <td class="text-right">Cash on Delivery</td>
+                                }
+                                else
                                 {
                                     <td class="text-right text-success">Paid (Zalo Pay)</td>
                                 }

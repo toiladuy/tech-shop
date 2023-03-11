@@ -71,7 +71,7 @@
                                             <td class="pro-remove"><a data-toggle="modal" data-target="#logoutModal-@item.Id"><i class="fa fa-trash-o"></i></a></td>
                                         </tr>
                                         <div class="modal fade" id="logoutModal-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                         aria-hidden="true">
+                                             aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -132,12 +132,12 @@
                                 }
                                 <div class="table-responsive">
                                     <table class="table">
-                                        <tr>
-                                            <td>Sub Total</td>
-                                            <td>$@total.ToString("#,##0.#")</td>
-                                        </tr>
                                         @if (!string.IsNullOrEmpty(vouchercode))
                                         {
+                                            <tr>
+                                                <td>Sub Total</td>
+                                                <td>$@total.ToString("#,##0.#")</td>
+                                            </tr>
                                             <tr>
                                                 <td>Voucher (@vouchercode)</td>
                                                 <td class="text-danger">- $@discountAmount.ToString("#,##0.#")</td>
