@@ -68,59 +68,33 @@
                                                     <table class="table table-bordered">
                                                         <thead>
                                                             <tr>
-                                                                <th>
-                                                                    Order ID
-                                                                </th>
-                                                                <th>
-                                                                    Total Price
-                                                                </th>
-                                                                <th>
-                                                                    Date
-                                                                </th>
-                                                                <th>
-                                                                    Status
-                                                                </th>
-                                                                <th>
-                                                                    Voucher
-                                                                </th>
+                                                                <th>Order ID</th>
+                                                                <th>Total Price</th>
+                                                                <th>Date</th>
+                                                                <th>Status</th>
+                                                                <th>Payment</th>
                                                                 <th></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             @foreach (Order order in orders)
                                                             {
-                                                            <tr>
-                                                                <td>@order.OrderId</td>
+                                                                <tr>
+                                                                    <td>@order.OrderId</td>
                                                                     <td>@order.TotalPrice.ToString("#,##0.#")</td>
-                                                                <td>@order.CreateAt</td>
-                                                                <td>
-                                                                    @switch (order.Status)
+                                                                    <td>@order.CreateAt</td>
+                                                                    <td>@order.StatusText</td>
+                                                                    @if (order.VoucherId == null)
                                                                     {
-                                                                        case 2:
-                                                                            <span>Chờ xác nhận</span>
-                                                                            break;
-                                                                        case 3:
-                                                                            <span>Đã xác nhận</span>
-                                                                            break;
-                                                                        case 4:
-                                                                            <span>Đang giao hàng</span>
-                                                                            break;
-                                                                        case 5:
-                                                                            <span>Đã giao hàng</span>
-                                                                            break;
+                                                                        <td></td>
                                                                     }
-                                                                </td>
-                                                                @if (order.VoucherId == null)
-                                                                {
-                                                                    <td></td>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <td>@order.Voucher.VoucherCode</td>
-                                                                }
+                                                                    else
+                                                                    {
+                                                                        <td>@order.Voucher.VoucherCode</td>
+                                                                    }
 
-                                                                <td><a href="/Orders/Details/@order.Id">Details</a></td>
-                                                            </tr>
+                                                                    <td><a href="/Orders/Details/@order.Id">Details</a></td>
+                                                                </tr>
                                                             }
                                                         </tbody>
                                                     </table>
@@ -172,99 +146,99 @@
                                                 </div>
                                             </div> <!-- Single Tab Content End -->
                                         </div>
-                                       
-                                                <!-- Single Tab Content Start -->
-                                                <div class="tab-pane fade" id="dashboad" role="tabpanel">
-                                                    <div class="myaccount-content">
-                                                        @foreach (Order order in orders.OrderByDescending(x => x.CreateAt).Take(5))
+
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade" id="dashboad" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                @foreach (Order order in orders.OrderByDescending(x => x.CreateAt).Take(5))
+                                                {
+                                                    int status = Convert.ToInt32(order.Status);
+                                                    <ul class="progressbar">
+                                                        Order Id : @order.OrderId
+                                                        @switch (status)
                                                         {
-                                                            int status = Convert.ToInt32(order.Status);
-                                                            <ul class="progressbar">
-                                                                Order Id : @order.OrderId
-                                                                @switch (status)
-                                                                {
-                                                                    case 2:
-                                                                        <li class="active">Chờ Xác Nhận</li>
-                                                                        <li>Đã Xác Nhận</li>
-                                                                        <li>Đang giao hàng</li>
-                                                                        <li>Đã Giao Hàng</li>
+                                                            case 2:
+                                                                <li class="active">Chờ Xác Nhận</li>
+                                                                <li>Đã Xác Nhận</li>
+                                                                <li>Đang giao hàng</li>
+                                                                <li>Đã Giao Hàng</li>
 
-                                                                        break;
-                                                                    case 3:
-                                                                        <li class="complete">Chờ Xác Nhận</li>
-                                                                        <li class="active">Đã Xác Nhận</li>
-                                                                        <li>Đang giao hàng</li>
-                                                                        <li>Đã Giao Hàng</li>
-                                                                        break;
-                                                                    case 4:
+                                                                break;
+                                                            case 3:
+                                                                <li class="complete">Chờ Xác Nhận</li>
+                                                                <li class="active">Đã Xác Nhận</li>
+                                                                <li>Đang giao hàng</li>
+                                                                <li>Đã Giao Hàng</li>
+                                                                break;
+                                                            case 4:
 
-                                                                        <li class="complete">Chờ Xác Nhận</li>
-                                                                        <li class="complete">Đã Xác Nhận</li>
-                                                                        <li class="active">Đang giao hàng</li>
-                                                                        <li>Đã Giao Hàng</li>
+                                                                <li class="complete">Chờ Xác Nhận</li>
+                                                                <li class="complete">Đã Xác Nhận</li>
+                                                                <li class="active">Đang giao hàng</li>
+                                                                <li>Đã Giao Hàng</li>
 
-                                                                        break;
-                                                                    case 5:
+                                                                break;
+                                                            case 5:
 
-                                                                        <li class="complete">Chờ Xác Nhận</li>
-                                                                        <li class="complete">Đã Xác Nhận</li>
-                                                                        <li class="complete">Đang giao hàng</li>
-                                                                        <li class="active">Đã Giao Hàng</li>
+                                                                <li class="complete">Chờ Xác Nhận</li>
+                                                                <li class="complete">Đã Xác Nhận</li>
+                                                                <li class="complete">Đang giao hàng</li>
+                                                                <li class="active">Đã Giao Hàng</li>
 
 
-                                                                        break;
-                                                                }
-                                                            </ul>
-
-
-
+                                                                break;
                                                         }
-                                                    </div>
-                                                </div>
-                                                <div class="tab-pane fade" id="address-edit" role="tabpanel">
-                                                    <div class="myaccount-content">
-                                                        <div class="account-details-form">
-                                                            <form asp-action="Updatepassword"
-                                                                  asp-controller="Users" method="post">
-                                                                <fieldset>
-                                                                    <legend>Password change</legend>
+                                                    </ul>
+
+
+
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="address-edit" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <div class="account-details-form">
+                                                    <form asp-action="Updatepassword"
+                                                          asp-controller="Users" method="post">
+                                                        <fieldset>
+                                                            <legend>Password change</legend>
+                                                            <div class="single-input-item">
+                                                                <label for="current-pwd" class="required">
+                                                                    Current
+                                                                    Password
+                                                                </label>
+                                                                <input name="current-password" type="password" id="current-pwd" placeholder="Current Password" />
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
                                                                     <div class="single-input-item">
-                                                                        <label for="current-pwd" class="required">
-                                                                            Current
+                                                                        <label for="new-pwd" class="required">
+                                                                            New
                                                                             Password
                                                                         </label>
-                                                                        <input name="current-password" type="password" id="current-pwd" placeholder="Current Password" />
+                                                                        <input name="newpassword" type="password" id="new-pwd" placeholder="New Password" />
                                                                     </div>
-                                                                    <div class="row">
-                                                                        <div class="col-lg-6">
-                                                                            <div class="single-input-item">
-                                                                                <label for="new-pwd" class="required">
-                                                                                    New
-                                                                                    Password
-                                                                                </label>
-                                                                                <input name="newpassword" type="password" id="new-pwd" placeholder="New Password" />
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-lg-6">
-                                                                            <div class="single-input-item">
-                                                                                <label for="confirm-pwd" class="required">
-                                                                                    Confirm
-                                                                                    Password
-                                                                                </label>
-                                                                                <input name="confirm-pwd" type="password" id="confirm-pwd" placeholder="Confirm Password" />
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </fieldset>
-                                                                <div class="single-input-item">
-                                                                    <button type="submit" class="btn btn-sqr">Save Changes</button>
                                                                 </div>
-                                                            </form>
+                                                                <div class="col-lg-6">
+                                                                    <div class="single-input-item">
+                                                                        <label for="confirm-pwd" class="required">
+                                                                            Confirm
+                                                                            Password
+                                                                        </label>
+                                                                        <input name="confirm-pwd" type="password" id="confirm-pwd" placeholder="Confirm Password" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </fieldset>
+                                                        <div class="single-input-item">
+                                                            <button type="submit" class="btn btn-sqr">Save Changes</button>
                                                         </div>
-                                                    </div>
+                                                    </form>
                                                 </div>
-                                            </div> <!-- My Account Tab Content End -->
+                                            </div>
                                         </div>
+                                    </div> <!-- My Account Tab Content End -->
+                                </div>
                             </div> <!-- My Account Page End -->
                         </div>
                     </div>

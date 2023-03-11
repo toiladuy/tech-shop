@@ -105,13 +105,13 @@
                                         continue;
                                     }
 
-                                    string[] arrListStr = product.ProductImage.Split(" ");
+                                    string[] images = product.ProductImage.Split(" ");
 
                                     <tr>
                                         <td>
-                                            @if (arrListStr.Length > 0)
+                                            @if (images.Length > 0)
                                             {
-                                                <img src="https://localhost:44347/images/@arrListStr[0]" class="rounded-circle" width="160" />
+                                                <img src="https://localhost:44347/images/@images[0]" class="rounded-circle" width="160" />
                                             }
                                         </td>
                                         <td>@product.ProductName</td>

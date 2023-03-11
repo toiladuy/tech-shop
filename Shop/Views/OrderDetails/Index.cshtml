@@ -48,19 +48,16 @@
                                     {
                                         <tr>
                                             @{
-                                                string[] arrListStr = item.Product.ProductImage.Split(' ');
+                                                string[] images = item.Product.ProductImage.Split(' ');
                                             }
-                                            <td class="pro-thumbnail"><a href="#"><img class="img-fluid" src="https://localhost:44347/images/@arrListStr[0]" alt="Product" /></a></td>
+                                            <td class="pro-thumbnail"><a href="#"><img class="img-fluid" src="https://localhost:44347/images/@images[0]" alt="Product" /></a></td>
                                             <td class="pro-title"><a href="#">@item.Product.ProductName</a></td>
                                             <td class="pro-price"><span><input type="text" value="@item.Price" readonly id="price" /></span></td>
                                             <td class="pro-quantity">
                                                 <div class="">
-
-
                                                     <a asp-controller="AddOrder" asp-action="SubQuantity" asp-route-id="@item.Id"><h3>-</h3></a>
                                                     <input type="text" style="text-align:center" value="@item.Quantity" width="60" height="80">
                                                     <a asp-controller="AddOrder" asp-action="AddQuantity" asp-route-id="@item.Id"><h4>+</h4></a>
-
                                                 </div>
 
                                             </td>

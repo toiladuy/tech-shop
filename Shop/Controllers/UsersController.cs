@@ -72,7 +72,7 @@ namespace Shop.Controllers
             return View(user);
         }
 
-        // GET: Users/Edit/5
+        // GET: Users/Edit
         public async Task<IActionResult> Edit()
         {
             var User = HttpContext.Session.GetString("user");
@@ -224,7 +224,7 @@ namespace Shop.Controllers
 
         public IActionResult ContactUs()
         {
-
+            FillCartData();
             return View();
         }
 

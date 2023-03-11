@@ -54,3 +54,4 @@ dkms.conf
 .vs
 obj/
 bin/
+/Shop/Controllers/WishlistController.cs

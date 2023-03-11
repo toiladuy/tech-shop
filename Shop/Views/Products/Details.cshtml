@@ -35,21 +35,21 @@
                         <div class="row">
                             <div class="col-lg-5">
                                 @{
-                                    string[] arrListStr = Model.ProductImage.Split(" ");
+                                    string[] images = Model.ProductImage.Split(" ");
                                 }
                                 <div class="product-large-slider">
-                                    @for (int i = 0; i < arrListStr.Length - 1; i++)
+                                    @for (int i = 0; i < images.Length - 1; i++)
                                     {
                                         <div class="pro-large-img img-zoom">
-                                            <img src="https://localhost:44347/images/@arrListStr[i]" alt="product-details" />
+                                            <img src="https://localhost:44347/images/@images[i]" alt="product-details" />
                                         </div>
                                     }
                                 </div>
                                 <div class="pro-nav slick-row-10 slick-arrow-style">
-                                    @for (int i = 0; i < arrListStr.Length - 1; i++)
+                                    @for (int i = 0; i < images.Length - 1; i++)
                                     {
                                         <div class="pro-nav-thumb">
-                                            <img src="https://localhost:44347/images/@arrListStr[i]" alt="product-details" />
+                                            <img src="https://localhost:44347/images/@images[i]" alt="product-details" />
                                         </div>
                                     }
                                 </div>

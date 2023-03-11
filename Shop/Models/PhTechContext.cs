@@ -30,6 +30,7 @@ namespace Shop.Models
         public virtual DbSet<Voucher> Vouchers { get; set; }
         public virtual DbSet<Warehouse> Warehouses { get; set; }
         public virtual DbSet<WarehouseDetail> WarehouseDetails { get; set; }
+        public virtual DbSet<Wishlist> Wishlists { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -372,6 +373,26 @@ namespace Shop.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_warehouse_detail_user");
+            });
+
+            modelBuilder.Entity<Wishlist>(entity =>
+            {
+                entity.ToTable("Wishlist");
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.ProductId).HasColumnName("product_id");
+                entity.Property(e => e.CreateAt).HasColumnName("create_at");
+
+                entity.HasOne(w => w.User)
+                    .WithMany(u => u.Wishlists)
+                    .HasForeignKey(w => w.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_wishlist_user");
+                entity.HasOne(w => w.Product)
+                    .WithMany(p => p.Wishlists)
+                    .HasForeignKey(w => w.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_wishlist_product");
             });
 
             OnModelCreatingPartial(modelBuilder);

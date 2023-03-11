@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Shop.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shop.Controllers
 {
@@ -20,7 +19,6 @@ namespace Shop.Controllers
         }
 
         // GET: OrderDetails
-
         public async Task<IActionResult> Index()
         {
             var user = HttpContext.Session.GetString("user");
@@ -46,29 +44,44 @@ namespace Shop.Controllers
             }
 
         }
+
         public async Task<IActionResult> Wishlist()
         {
             var user = HttpContext.Session.GetString("user");
-            int? checkOrderID = 0;
             if (user != null)
             {
-
-                var phContext1 = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
-                checkOrderID = phContext1.Where(s => s.UserId.Equals(Int32.Parse(user)) && s.Status.Equals(6)).FirstOrDefault()?.Id;
-                if (checkOrderID == 0)
-                {
-                    var phContext2 = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product);
-                    return View(await phContext2.ToListAsync());
-                }
-                var phContext = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrderID);
-                return View(await phContext.ToListAsync());
-
+                FillCartData();
+                var wishlistCtx = _context.Wishlists.Include(o => o.Product).Where(w => w.UserId == int.Parse(user));
+                return View(await wishlistCtx.ToListAsync());
             }
             else
             {
                 return Redirect("/Login");
             }
         }
+
+        private void FillCartData()
+        {
+            var user = HttpContext.Session.GetString("user");
+            if (user == null)
+            {
+                ViewData["cartItems"] = null;
+            }
+            else
+            {
+                var orderCtx = _context.Orders.Include(o => o.User).Include(o => o.Voucher);
+                var checkOrder = orderCtx.Where(s => s.UserId.Equals(int.Parse(user)) && s.Status.Equals(OrderStatus.New)).FirstOrDefault();
+                if (checkOrder == null)
+                {
+                    ViewData["cartItems"] = null;
+                }
+                else
+                {
+                    ViewData["cartItems"] = _context.OrderDetails.Include(o => o.Order).Include(o => o.Product).Where(s => s.OrderId == checkOrder.Id);
+                }
+            }
+        }
+
         // GET: OrderDetails/Details/5
         public async Task<IActionResult> Details(int? id)
         {

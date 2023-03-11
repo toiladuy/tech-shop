@@ -49,10 +49,10 @@
                                         var itemTotal = item.Quantity * item.Price;
                                         <tr>
                                             @{
-                                                string[] arrListStr = item.Product.ProductImage.Split(' ');
+                                                string[] images = item.Product.ProductImage.Split(' ');
                                             }
                                             <td class="pro-thumbnail">
-                                                <img class="img-fluid" src="https://localhost:44347/images/@arrListStr[0]" alt="Product" />
+                                                <img class="img-fluid" src="https://localhost:44347/images/@images[0]" alt="Product" />
                                             </td>
                                             <td class="pro-title">
                                                 <a href="/Products/Details/@item.ProductId">@item.Product.ProductName</a>
@@ -79,30 +79,30 @@
                                     @if (order.Voucher != null)
                                     {
                                         <tr>
-                                            <td colspan="4">Sub Total</td>
-                                            <td class="text-right">$@subTotal.ToString("#,##0.#")</td>
+                                            <td colspan="2">Sub Total</td>
+                                            <td colspan="3" class="text-right">$@subTotal.ToString("#,##0.#")</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="4">Voucher: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
-                                            <td class="text-right text-danger">- $@discount.ToString("#,##0.#")</td>
+                                            <td colspan="2">Voucher: @order.Voucher.VoucherCode (@order.Voucher.VoucherDiscount%)</td>
+                                            <td colspan="3" class="text-right text-danger">- $@discount.ToString("#,##0.#")</td>
                                         </tr>
                                     }
                                     <tr>
                                         @{
                                             double total = subTotal - discount;
                                         }
-                                        <td colspan="4"><strong>Total</strong></td>
-                                        <td class="text-right"><strong>$@total.ToString("#,##0.#")</strong></td>
+                                        <td colspan="2"><strong>Total</strong></td>
+                                        <td colspan="3" class="text-right"><strong>$@total.ToString("#,##0.#")</strong></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="4">Payment</td>
+                                        <td colspan="2">Payment</td>
                                         @if (order.IsCOD())
                                         {
-                                            <td class="text-right text-danger">Not Paid (Cash on Delivery)</td>
+                                            <td colspan="3" class="text-right text-danger">Not Paid (Cash on Delivery)</td>
                                         }
                                         else
                                         {
-                                            <td class="text-right text-success">Paid (Zalo Pay)</td>
+                                            <td colspan="3" class="text-right text-success">Paid (Zalo Pay)</td>
                                         }
                                     </tr>
                                 </tfoot>

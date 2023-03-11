@@ -13,6 +13,7 @@ namespace Shop.Models
         {
             OrderDetails = new HashSet<OrderDetail>();
             WarehouseDetails = new HashSet<WarehouseDetail>();
+            Wishlists = new HashSet<Wishlist>();
         }
 
         public int Id { get; set; }
@@ -35,6 +36,7 @@ namespace Shop.Models
         public virtual Type ProductTypeNavigation { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<WarehouseDetail> WarehouseDetails { get; set; }
+        public virtual ICollection<Wishlist> Wishlists { get; set; }
 
         public string ProductParsedDescription
         {

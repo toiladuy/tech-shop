@@ -127,7 +127,7 @@
                                             }
                                         </li>
                                         <li>
-                                            <a href="/OrderDetails/Wishlist">
+                                            <a href="/Wishlist">
                                                 <i class="pe-7s-like"></i>
                                             </a>
                                         </li>
@@ -189,10 +189,10 @@
                                     <div class="minicart-item">
                                         <div class="minicart-thumb">
                                             @{
-                                                string[] arrListStr = item.Product.ProductImage.Split(' ');
+                                                string[] images = item.Product.ProductImage.Split(' ');
                                             }
                                             <a href="product-details.html">
-                                                <img src="https://localhost:44347/images/@arrListStr[0]" alt="product">
+                                                <img src="https://localhost:44347/images/@images[0]" alt="product">
                                             </a>
                                         </div>
                                         <div class="minicart-content">

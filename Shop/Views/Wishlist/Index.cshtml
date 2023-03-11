@@ -47,11 +47,17 @@
                                             <td class="pro-title"><a href="/Products/Details/@item.ProductId">@item.Product.ProductName</a></td>
                                             <td class="pro-price"><span>$@item.Product.OutPrice.ToString("#,##0.#")</span></td>
                                             <td class="pro-subtotal">
-                                                <a asp-controller="AddOrder" asp-action="AddtoCart" asp-route-id="@item.ProductId" class="btn btn-sqr">
+                                                <a asp-controller="AddOrder" asp-action="AddtoCart" asp-route-id="@item.ProductId" class="btn btn-cart2">
                                                     Add to Cart
                                                 </a>
 
-                                                <a asp-controller="AddOrder" asp-action="AddtoCart" asp-route-id="@item.ProductId"><i class="fa fa-trash-o"></i></a>
+                                                <a asp-controller="Wishlist" asp-action="RemoveWishlist" asp-route-id="@item.ProductId" class="btn btn-danger btn-remove">
+                                                    <i class="fa fa-trash-o"></i>
+                                                </a>
+                                                 @*<form method="post" asp-controller="AddOrder"></form>*@
+                                                @*<button type="submit" formaction="PlaceCOD" class="btn btn-sqr">Place Order</button>
+                                            <button type="submit" formaction="PayViaZaloPay" class="btn btn-sqr"><img src="~/assets/img/logo-zalopay.svg" alt=""> Pay via ZaloPay</button>
+                                            <button type="submit" formaction="PayViaMomo" class="btn btn-sqr"><img src="~/assets/img/momo_square.svg" width="18px" alt=""> Pay via Momo</button>*@
                                             </td>
                                         </tr>
                                     }
@@ -72,3 +78,10 @@
     <i class="fa fa-angle-up"></i>
 </div>
 <!-- Scroll to Top End -->
+
+<style>
+    .btn-remove {
+        background-color: #dc3545 !important;
+        color: #fff !important;
+    }
+</style>
