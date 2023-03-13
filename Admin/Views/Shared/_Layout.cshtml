@@ -22,7 +22,23 @@
 </head>
 
 <body id="page-top">
+    @{
+        var path = Url.Action();
 
+        bool isUserTabs = path.StartsWith("/Permissions", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Roles", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Users", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Credentials", StringComparison.OrdinalIgnoreCase);
+
+        bool isProductTabs = path.StartsWith("/Products", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Types", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Brands", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Sizes", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Vouchers", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Colors", StringComparison.OrdinalIgnoreCase);
+
+        bool isOrderTabs = path.StartsWith("/Orders", StringComparison.OrdinalIgnoreCase);
+    }
     <!-- Page Wrapper -->
     <div id="wrapper">
 
@@ -40,7 +56,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-           
+
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -57,7 +73,7 @@
                     <i class="fas fa-fw fa-cog"></i>
                     <span>User Manager<span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="collapseTwo" class="collapse @(isUserTabs ? "show" : "")" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="\Permissions">Permission</a>
                         <a class="collapse-item" href="\Roles">Roles</a>
@@ -72,7 +88,7 @@
                     <i class="fas fa-fw fa-wrench"></i>
                     <span>Product Manager</span>
                 </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                <div id="collapseUtilities" class="collapse @(isProductTabs ? "show" : "")" aria-labelledby="headingUtilities"
                      data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Product : </h6>
@@ -82,8 +98,8 @@
                         <a class="collapse-item" href="\Sizes">State</a>
                         <a class="collapse-item" href="\Vouchers">Voucher</a>
                         <a class="collapse-item" href="\Colors">Color</a>
-                        <h6 class="collapse-header">Warehouse Product : </h6>
-                        <a class="collapse-item" href="\WarehouseDetails">Warehouse</a>
+                        @*<h6 class="collapse-header">Warehouse Product : </h6>
+                        <a class="collapse-item" href="\WarehouseDetails">Warehouse</a>*@
                     </div>
                 </div>
             </li>
@@ -93,7 +109,7 @@
                     <i class="fas fa-fw fa-wrench"></i>
                     <span>Order Manager</span>
                 </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages"
+                <div id="collapsePages" class="collapse @(isOrderTabs ? "show" : "")" aria-labelledby="headingPages"
                      data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Order</h6>
@@ -123,7 +139,7 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
-                    
+
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -157,7 +173,7 @@
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">@TempData.Peek("Message")</span>
                                 @*<img class="img-profile rounded-circle"
-                                     src="~/images/ngan1.jpg">*@
+                                src="~/images/ngan1.jpg">*@
 
                             </a>
                             <!-- Dropdown - User Information -->
@@ -167,7 +183,7 @@
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
-                                
+
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -229,7 +245,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="modal fade" id="changeProductModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
