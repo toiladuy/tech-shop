@@ -27,5 +27,35 @@ namespace Admin.Models
         public virtual User User { get; set; }
         public virtual Voucher Voucher { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+
+        public bool IsOpen()
+        {
+            return Status.Equals(OrderStatus.New);
+        }
+
+        public bool IsCOD()
+        {
+            return PaymentMethod.Equals(Payment.Method.COD.ToString());
+        }
+
+        public bool IsPaid()
+        {
+            return PaymentStatus.Equals(Payment.Status.PAID);
+        }
+
+        public string StatusText
+        {
+            get
+            {
+                switch (Status)
+                {
+                    case OrderStatus.WaitingForConfirm: return "Chờ xác nhận";
+                    case OrderStatus.Confirmed: return "Đã xác nhận";
+                    case OrderStatus.InDelivery: return "Đang giao hàng";
+                    case OrderStatus.Shipped: return "Đã giao hàng";
+                    default: return "Chờ xác nhận";
+                }
+            }
+        }
     }
 }

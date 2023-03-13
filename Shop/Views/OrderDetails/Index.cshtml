@@ -46,27 +46,24 @@
                                 <tbody>
                                     @foreach (var item in Model)
                                     {
+                                        string[] images = item.Product.ProductImage.Split(' ');
+                                        var itemTotalPrice = item.Quantity * item.Price;
+
                                         <tr>
-                                            @{
-                                                string[] images = item.Product.ProductImage.Split(' ');
-                                            }
                                             <td class="pro-thumbnail"><a href="#"><img class="img-fluid" src="https://localhost:44347/images/@images[0]" alt="Product" /></a></td>
                                             <td class="pro-title"><a href="#">@item.Product.ProductName</a></td>
-                                            <td class="pro-price"><span><input type="text" value="@item.Price" readonly id="price" /></span></td>
+                                            <td class="pro-price">@item.Price?.ToString("#,##0.#")</td>
                                             <td class="pro-quantity">
                                                 <div class="">
                                                     <a asp-controller="AddOrder" asp-action="SubQuantity" asp-route-id="@item.Id"><h3>-</h3></a>
-                                                    <input type="text" style="text-align:center" value="@item.Quantity" width="60" height="80">
+                                                    <input type="text" value="@item.Quantity" style="text-align:center;width:65px" height="80">
                                                     <a asp-controller="AddOrder" asp-action="AddQuantity" asp-route-id="@item.Id"><h4>+</h4></a>
                                                 </div>
-
                                             </td>
-                                            @{
-                                                var pricetotla = item.Quantity * item.Price;
-                                            }
-                                            <td class="pro-subtotal"><span>@pricetotla?.ToString("#,##0.#")</span></td>
+                                            <td class="pro-subtotal"><span>@itemTotalPrice?.ToString("#,##0.#")</span></td>
                                             <td class="pro-remove"><a data-toggle="modal" data-target="#logoutModal-@item.Id"><i class="fa fa-trash-o"></i></a></td>
                                         </tr>
+
                                         <div class="modal fade" id="logoutModal-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                              aria-hidden="true">
                                             <div class="modal-dialog" role="document">

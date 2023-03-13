@@ -82,17 +82,15 @@
                                                                 <tr>
                                                                     <td>@order.OrderId</td>
                                                                     <td>@order.TotalPrice.ToString("#,##0.#")</td>
-                                                                    <td>@order.CreateAt</td>
+                                                                    <td>@order.CreateAt.ToString("dd/MM/yyyy HH:mm")</td>
                                                                     <td>@order.StatusText</td>
-                                                                    @if (order.VoucherId == null)
+                                                                    @if(order.IsCOD())
                                                                     {
-                                                                        <td></td>
-                                                                    }
-                                                                    else
+                                                                        <td>COD</td>
+                                                                    } else
                                                                     {
-                                                                        <td>@order.Voucher.VoucherCode</td>
+                                                                        <td>ZaloPay</td>
                                                                     }
-
                                                                     <td><a href="/Orders/Details/@order.Id">Details</a></td>
                                                                 </tr>
                                                             }
